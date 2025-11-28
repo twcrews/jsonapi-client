@@ -1,4 +1,4 @@
 {
-	"dotnet.defaultSolution": "Crews.Web.Netjac.sln",
-	"dotnet.unitTests.runSettingsPath": "src/Crews.Web.Netjac.Tests/.runsettings"
+	"dotnet.defaultSolution": "Crews.Web.JsonApiClient.sln",
+	"dotnet.unitTests.runSettingsPath": "src/Crews.Web.JsonApiClient.Tests/.runsettings"
 }
