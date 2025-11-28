@@ -36,11 +36,11 @@ public class MediaTypeHeaderBuilder
 	{
 		if (headerValue.MediaType != Constants.Headers.MediaType)
 		{
-			throw new ArgumentException(Constants.Exceptions.IllegalMediaType, nameof(headerValue));
+			throw new ArgumentException(Constants.Exceptions.InvalidMediaType, nameof(headerValue));
 		}
 		if (headerValue.Parameters.Any(IsIllegalParameter))
 		{
-			throw new ArgumentException(Constants.Exceptions.IllegalHeaderParameters, nameof(headerValue));
+			throw new ArgumentException(Constants.Exceptions.InvalidHeaderParameters, nameof(headerValue));
 		}
 
 		NameValueHeaderValue? extensionsParameter = headerValue.Parameters.SingleOrDefault(IsExtensionsParameter);

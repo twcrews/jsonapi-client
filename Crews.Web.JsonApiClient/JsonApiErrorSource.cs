@@ -6,7 +6,7 @@ namespace Crews.Web.JsonApiClient;
 /// Represents the source of an error in a request, such as a specific field, parameter, or header that caused the
 /// error.
 /// </summary>
-public class ErrorSource
+public class JsonApiErrorSource
 {
     /// <summary>
     /// Gets or sets the JSON Pointer that identifies the location within a JSON document that caused the error.

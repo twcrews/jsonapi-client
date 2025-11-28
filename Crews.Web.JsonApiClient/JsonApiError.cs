@@ -6,7 +6,7 @@ namespace Crews.Web.JsonApiClient;
 /// <summary>
 /// Represents an error in a document as defined in section 11.2 of the JSON:API specification.
 /// </summary>
-public class Error
+public class JsonApiError
 {
     /// <summary>
     /// Gets or sets the unique identifier for this particular occurrence of the problem.
@@ -18,7 +18,7 @@ public class Error
     /// Gets or sets the links that provide additional information about the error.
     /// </summary>
     [JsonPropertyName("links")]
-    public ErrorLinksObject? Links { get; set; }
+    public JsonApiErrorLinksObject? Links { get; set; }
 
     /// <summary>
     /// Gets or sets the HTTP status code associated with the error.
@@ -48,7 +48,7 @@ public class Error
     /// Gets or sets the source of the error.
     /// </summary>
     [JsonPropertyName("source")]
-    public ErrorSource? Source { get; set; }
+    public JsonApiErrorSource? Source { get; set; }
 
     /// <summary>
     /// Gets or sets the additional metadata associated with the object.

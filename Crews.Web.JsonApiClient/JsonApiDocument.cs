@@ -25,20 +25,20 @@ public abstract class JsonApiDocument
     /// Gets or sets the collection of errors associated with the document.
     /// </summary>
     [JsonPropertyName("errors")]
-    public IEnumerable<Error>? Errors { get; set; }
+    public IEnumerable<JsonApiError>? Errors { get; set; }
 
     /// <summary>
     /// Gets or sets the <c>links</c> property of the document.
     /// </summary>
     /// <seealso href="https://jsonapi.org/format/#document-links"/>
     [JsonPropertyName("links")]
-    public LinksObject? Links { get; set; }
+    public JsonApiLinksObject? Links { get; set; }
 
     /// <summary>
     /// Gets or sets the <c>included</c> property of the document.
     /// </summary>
     [JsonPropertyName("included")]
-    public IEnumerable<Resource>? Included { get; set; }
+    public IEnumerable<JsonApiResource>? Included { get; set; }
 
     /// <summary>
     /// Gets or sets the <c>meta</c> property of the document.
@@ -77,35 +77,35 @@ public abstract class JsonApiDocument
     public bool HasErrors => Errors is not null && Errors.Any();
 
     /// <summary>
-    /// Attempts to deserialize the <see cref="Data"/> property as a <see cref="Resource"/> object.
+    /// Attempts to deserialize the <see cref="Data"/> property as a <see cref="JsonApiResource"/> object.
     /// </summary>
     /// <returns>
-    /// The deserialized <see cref="Resource"/> object if <see cref="Data"/> is a valid resource object, or
+    /// The deserialized <see cref="JsonApiResource"/> object if <see cref="Data"/> is a valid resource object, or
     /// <see langword="null"/> if <see cref="Data"/> is <see langword="null"/>.
     /// </returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public Resource? GetResource()
+    public JsonApiResource? GetResource()
     {
         if (Data is null) return null;
         if (Data is JsonElement data && data.ValueKind == JsonValueKind.Object)
-            return data.Deserialize<Resource>();
+            return data.Deserialize<JsonApiResource>();
 
         throw new InvalidOperationException(Constants.Exceptions.GetResourceInvalidType);
     }
 
     /// <summary>
-    /// Attempts to deserialize the <see cref="Data"/> property as a collection of <see cref="Resource"/> objects.
+    /// Attempts to deserialize the <see cref="Data"/> property as a collection of <see cref="JsonApiResource"/> objects.
     /// </summary>
     /// <returns>
-    /// The deserialized <see cref="Resource"/> collection if <see cref="Data"/> is a valid resource array, or
+    /// The deserialized <see cref="JsonApiResource"/> collection if <see cref="Data"/> is a valid resource array, or
     /// <see langword="null"/> if <see cref="Data"/> is <see langword="null"/>.
     /// </returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public IEnumerable<Resource>? GetResourceCollection()
+    public IEnumerable<JsonApiResource>? GetResourceCollection()
     {
         if (Data is null) return null;
         if (Data is JsonElement data && data.ValueKind == JsonValueKind.Array)
-            return data.Deserialize<Resource[]>();
+            return data.Deserialize<JsonApiResource[]>();
 
         throw new InvalidOperationException(Constants.Exceptions.GetResourceCollectionInvalidType);
     }

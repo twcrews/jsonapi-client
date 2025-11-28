@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using Crews.Web.JsonApiClient.Converters;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace Crews.Web.JsonApiClient;
@@ -6,14 +7,13 @@ namespace Crews.Web.JsonApiClient;
 /// <summary>
 /// Represents a hypermedia link with associated metadata, as defined in section 7.6.1 of the JSON:API specification.
 /// </summary>
-[JsonConverter(typeof(Converters.LinkConverter))]
-public class Link
+public class JsonApiLink
 {
     /// <summary>
     /// Gets or sets the URL of the link.
     /// </summary>
     [JsonPropertyName("href")]
-    public required string Href { get; set; }
+    public required Uri Href { get; set; }
 
     /// <summary>
     /// Gets or sets the relation type for the link.
@@ -25,7 +25,8 @@ public class Link
     /// Gets or sets a link to a resource that provides additional descriptive information about the current object.
     /// </summary>
     [JsonPropertyName("describedby")]
-    public Link? DescribedBy { get; set; }
+    [JsonConverter(typeof(JsonApiLinkConverter))]
+    public JsonApiLink? DescribedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the title associated with the object.
@@ -50,4 +51,10 @@ public class Link
     /// </summary>
     [JsonPropertyName("meta")]
     public JsonObject? Metadata { get; set; }
+
+    /// <summary>
+    /// Implicitly converts a string URL to a JsonApiLink instance.
+    /// </summary>
+    /// <param name="href"></param>
+    public static implicit operator JsonApiLink(string href) => new() { Href = new(href) };
 }

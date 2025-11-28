@@ -1,15 +1,17 @@
-﻿using System.Text.Json;
+﻿using Crews.Web.JsonApiClient.Converters;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Crews.Web.JsonApiClient.Tests.Converters;
 
-public class LinkConverterTests
+public class JsonApiLinkConverterTests
 {
     private readonly JsonSerializerOptions _options;
 
-    public LinkConverterTests()
+    public JsonApiLinkConverterTests()
     {
         _options = new JsonSerializerOptions();
+        _options.Converters.Add(new JsonApiLinkConverter());
     }
 
     [Fact(DisplayName = "Read deserializes string value to Link with Href only")]
@@ -17,10 +19,10 @@ public class LinkConverterTests
     {
         const string json = "\"https://example.com/articles\"";
 
-        Link? result = JsonSerializer.Deserialize<Link>(json, _options);
+        JsonApiLink? result = JsonSerializer.Deserialize<JsonApiLink>(json, _options);
 
         Assert.NotNull(result);
-        Assert.Equal("https://example.com/articles", result.Href);
+        Assert.Equal("https://example.com/articles", result.Href.OriginalString);
         Assert.Null(result.Rel);
         Assert.Null(result.Title);
         Assert.Null(result.Type);
@@ -34,10 +36,10 @@ public class LinkConverterTests
     {
         const string json = """{"href": "https://example.com/articles"}""";
 
-        Link? result = JsonSerializer.Deserialize<Link>(json, _options);
+        JsonApiLink? result = JsonSerializer.Deserialize<JsonApiLink>(json, _options);
 
         Assert.NotNull(result);
-        Assert.Equal("https://example.com/articles", result.Href);
+        Assert.Equal("https://example.com/articles", result.Href.OriginalString);
         Assert.Null(result.Rel);
         Assert.Null(result.Title);
         Assert.Null(result.Type);
@@ -60,10 +62,10 @@ public class LinkConverterTests
         }
         """;
 
-        Link? result = JsonSerializer.Deserialize<Link>(json, _options);
+        JsonApiLink? result = JsonSerializer.Deserialize<JsonApiLink>(json, _options);
 
         Assert.NotNull(result);
-        Assert.Equal("https://example.com/articles", result.Href);
+        Assert.Equal("https://example.com/articles", result.Href.OriginalString);
         Assert.Equal("self", result.Rel);
         Assert.Equal("Article Title", result.Title);
         Assert.Equal("text/html", result.Type);
@@ -77,21 +79,21 @@ public class LinkConverterTests
     public void ReadDeserializesObjectWithNestedDescribedBy()
     {
         const string json = """
-      {
-                "href": "https://example.com/articles",
-     "describedby": {
-              "href": "https://example.com/schema/article",
-     "title": "Article Schema"
-     }
-     }
-     """;
+        {
+            "href": "https://example.com/articles",
+            "describedby": {
+                "href": "https://example.com/schema/article",
+                "title": "Article Schema"
+            }
+        }
+        """;
 
-        Link? result = JsonSerializer.Deserialize<Link>(json, _options);
+        JsonApiLink? result = JsonSerializer.Deserialize<JsonApiLink>(json, _options);
 
         Assert.NotNull(result);
-        Assert.Equal("https://example.com/articles", result.Href);
+        Assert.Equal("https://example.com/articles", result.Href.OriginalString);
         Assert.NotNull(result.DescribedBy);
-        Assert.Equal("https://example.com/schema/article", result.DescribedBy.Href);
+        Assert.Equal("https://example.com/schema/article", result.DescribedBy.Href.OriginalString);
         Assert.Equal("Article Schema", result.DescribedBy.Title);
     }
 
@@ -100,7 +102,7 @@ public class LinkConverterTests
     {
         const string json = "123";
 
-        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<Link>(json, _options));
+        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<JsonApiLink>(json, _options));
     }
 
     [Fact(DisplayName = "Read throws JsonException for array token type")]
@@ -108,13 +110,13 @@ public class LinkConverterTests
     {
         const string json = "[]";
 
-        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<Link>(json, _options));
+        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<JsonApiLink>(json, _options));
     }
 
     [Fact(DisplayName = "Write serializes Link with href only as string")]
     public void WriteSerializesHrefOnlyAsString()
     {
-        Link link = new() { Href = "https://example.com/articles" };
+        JsonApiLink link = new() { Href = new("https://example.com/articles") };
 
         string result = JsonSerializer.Serialize(link, _options);
 
@@ -124,9 +126,9 @@ public class LinkConverterTests
     [Fact(DisplayName = "Write serializes Link with rel as object")]
     public void WriteSerializesLinkWithRelAsObject()
     {
-        Link link = new()
+        JsonApiLink link = new()
         {
-            Href = "https://example.com/articles",
+            Href = new("https://example.com/articles"),
             Rel = "self"
         };
 
@@ -140,9 +142,9 @@ public class LinkConverterTests
     [Fact(DisplayName = "Write serializes Link with title as object")]
     public void WriteSerializesLinkWithTitleAsObject()
     {
-        Link link = new()
+        JsonApiLink link = new()
         {
-            Href = "https://example.com/articles",
+            Href = new("https://example.com/articles"),
             Title = "Article Title"
         };
 
@@ -156,9 +158,9 @@ public class LinkConverterTests
     [Fact(DisplayName = "Write serializes Link with type as object")]
     public void WriteSerializesLinkWithTypeAsObject()
     {
-        Link link = new()
+        JsonApiLink link = new()
         {
-            Href = "https://example.com/articles",
+            Href = new("https://example.com/articles"),
             Type = "text/html"
         };
 
@@ -172,9 +174,9 @@ public class LinkConverterTests
     [Fact(DisplayName = "Write serializes Link with hreflang as object")]
     public void WriteSerializesLinkWithHrefLangAsObject()
     {
-        Link link = new()
+        JsonApiLink link = new()
         {
-            Href = "https://example.com/articles",
+            Href = new("https://example.com/articles"),
             HrefLanguage = "en-US"
         };
 
@@ -189,9 +191,9 @@ public class LinkConverterTests
     public void WriteSerializesLinkWithMetadataAsObject()
     {
         JsonObject metadata = new() { ["count"] = 10 };
-        Link link = new()
+        JsonApiLink link = new()
         {
-            Href = "https://example.com/articles",
+            Href = new("https://example.com/articles"),
             Metadata = metadata
         };
 
@@ -205,14 +207,14 @@ public class LinkConverterTests
     [Fact(DisplayName = "Write serializes Link with describedby as object")]
     public void WriteSerializesLinkWithDescribedByAsObject()
     {
-        Link describedBy = new()
+        JsonApiLink describedBy = new()
         {
-            Href = "https://example.com/schema/article",
+            Href = new("https://example.com/schema/article"),
             Title = "Article Schema"
         };
-        Link link = new()
+        JsonApiLink link = new()
         {
-            Href = "https://example.com/articles",
+            Href = new("https://example.com/articles"),
             DescribedBy = describedBy
         };
 
@@ -229,13 +231,13 @@ public class LinkConverterTests
     public void WriteSerializesLinkWithAllPropertiesAsObject()
     {
         JsonObject metadata = new() { ["count"] = 10 };
-        Link describedBy = new()
+        JsonApiLink describedBy = new()
         {
-            Href = "https://example.com/schema/article"
+            Href = new("https://example.com/schema/article")
         };
-        Link link = new()
+        JsonApiLink link = new()
         {
-            Href = "https://example.com/articles",
+            Href = new("https://example.com/articles"),
             Rel = "self",
             Title = "Article Title",
             Type = "text/html",
@@ -253,7 +255,7 @@ public class LinkConverterTests
         Assert.Equal("text/html", doc.RootElement.GetProperty("type").GetString());
         Assert.Equal("en-US", doc.RootElement.GetProperty("hreflang").GetString());
         Assert.Equal(10, doc.RootElement.GetProperty("meta").GetProperty("count").GetInt32());
-        Assert.Equal("https://example.com/schema/article", doc.RootElement.GetProperty("describedby").GetProperty("href").GetString());
+        Assert.Equal("https://example.com/schema/article", doc.RootElement.GetProperty("describedby").GetString());
     }
 
     [Theory(DisplayName = "Roundtrip serialization preserves Link data")]
@@ -261,10 +263,10 @@ public class LinkConverterTests
     [InlineData("https://example.com/with-path/and/params?id=123&type=article")]
     public void RoundtripSerializationPreservesSimpleLink(string href)
     {
-        Link original = new() { Href = href };
+        JsonApiLink original = new() { Href = new(href) };
 
         string json = JsonSerializer.Serialize(original, _options);
-        Link? deserialized = JsonSerializer.Deserialize<Link>(json, _options);
+        JsonApiLink? deserialized = JsonSerializer.Deserialize<JsonApiLink>(json, _options);
 
         Assert.NotNull(deserialized);
         Assert.Equal(original.Href, deserialized.Href);
@@ -280,9 +282,9 @@ public class LinkConverterTests
     public void RoundtripSerializationPreservesComplexLink()
     {
         JsonObject metadata = new() { ["count"] = 42, ["type"] = "article" };
-        Link original = new()
+        JsonApiLink original = new()
         {
-            Href = "https://example.com/articles",
+            Href = new("https://example.com/articles"),
             Rel = "self",
             Title = "Article Collection",
             Type = "application/json",
@@ -291,7 +293,7 @@ public class LinkConverterTests
         };
 
         string json = JsonSerializer.Serialize(original, _options);
-        Link? deserialized = JsonSerializer.Deserialize<Link>(json, _options);
+        JsonApiLink? deserialized = JsonSerializer.Deserialize<JsonApiLink>(json, _options);
 
         Assert.NotNull(deserialized);
         Assert.Equal(original.Href, deserialized.Href);

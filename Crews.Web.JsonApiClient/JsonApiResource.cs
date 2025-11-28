@@ -6,7 +6,7 @@ namespace Crews.Web.JsonApiClient;
 /// <summary>
 /// Represents a resource object as defined in section 7.2 of the JSON:API specification.
 /// </summary>
-public class Resource : ResourceIdentifier
+public class JsonApiResource : JsonApiResourceIdentifier
 {
     /// <summary>
     /// Gets or sets the collection of custom attributes associated with this object.
@@ -18,13 +18,13 @@ public class Resource : ResourceIdentifier
     /// Gets or sets the collection of relationships associated with this object.
     /// </summary>
     [JsonPropertyName("relationships")]
-    public Dictionary<string, Relationship>? Relationships { get; set; }
+    public Dictionary<string, JsonApiRelationship>? Relationships { get; set; }
 
     /// <summary>
     /// Gets or sets the <c>links</c> property of the resource object.
     /// </summary>
     [JsonPropertyName("links")]
-    public LinksObject? Links { get; set; }
+    public JsonApiLinksObject? Links { get; set; }
 
     /// <summary>
     /// Gets or sets the custom metadata associated with this object.

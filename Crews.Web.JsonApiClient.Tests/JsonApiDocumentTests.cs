@@ -175,7 +175,7 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
 
 		Assert.NotNull(doc);
-		Resource? resource = doc.GetResource();
+		JsonApiResource? resource = doc.GetResource();
 		Assert.NotNull(resource);
 		Assert.Equal("articles", resource.Type);
 		Assert.Equal("1", resource.ID);
@@ -191,7 +191,7 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
 
 		Assert.NotNull(doc);
-		Resource? resource = doc.GetResource();
+		JsonApiResource? resource = doc.GetResource();
 		Assert.Null(resource);
 	}
 
@@ -203,7 +203,7 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
 
 		Assert.NotNull(doc);
-		Resource? resource = doc.GetResource();
+		JsonApiResource? resource = doc.GetResource();
 		Assert.Null(resource);
 	}
 
@@ -250,9 +250,9 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
 
 		Assert.NotNull(doc);
-		IEnumerable<Resource>? resources = doc.GetResourceCollection();
+		IEnumerable<JsonApiResource>? resources = doc.GetResourceCollection();
 		Assert.NotNull(resources);
-		Resource[] resourceArray = resources.ToArray();
+		JsonApiResource[] resourceArray = resources.ToArray();
 		Assert.Equal(2, resourceArray.Length);
 		Assert.Equal("articles", resourceArray[0].Type);
 		Assert.Equal("1", resourceArray[0].ID);
@@ -270,7 +270,7 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
 
 		Assert.NotNull(doc);
-		IEnumerable<Resource>? resources = doc.GetResourceCollection();
+		IEnumerable<JsonApiResource>? resources = doc.GetResourceCollection();
 		Assert.NotNull(resources);
 		Assert.Empty(resources);
 	}
@@ -283,7 +283,7 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
 
 		Assert.NotNull(doc);
-		IEnumerable<Resource>? resources = doc.GetResourceCollection();
+		IEnumerable<JsonApiResource>? resources = doc.GetResourceCollection();
 		Assert.Null(resources);
 	}
 
@@ -295,7 +295,7 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
 
 		Assert.NotNull(doc);
-		IEnumerable<Resource>? resources = doc.GetResourceCollection();
+		IEnumerable<JsonApiResource>? resources = doc.GetResourceCollection();
 		Assert.Null(resources);
 	}
 
@@ -356,7 +356,7 @@ public class JsonApiDocumentTests
 		Assert.NotNull(doc);
 		Assert.NotNull(doc.Links);
 		Assert.NotNull(doc.Links.Self);
-		Assert.Equal("https://example.com/articles", doc.Links.Self.Href);
+		Assert.Equal("https://example.com/articles", doc.Links.Self.Href.OriginalString);
 	}
 
 	[Fact(DisplayName = "Deserializes document with Included property")]
@@ -376,7 +376,7 @@ public class JsonApiDocumentTests
 
 		Assert.NotNull(doc);
 		Assert.NotNull(doc.Included);
-		Resource[] included = doc.Included.ToArray();
+		JsonApiResource[] included = doc.Included.ToArray();
 		Assert.Equal(2, included.Length);
 		Assert.Equal("people", included[0].Type);
 		Assert.Equal("9", included[0].ID);
@@ -428,7 +428,7 @@ public class JsonApiDocumentTests
 
 		Assert.NotNull(doc);
 		Assert.NotNull(doc.Errors);
-		Error[] errors = doc.Errors.ToArray();
+		JsonApiError[] errors = doc.Errors.ToArray();
 		Assert.Single(errors);
 		Assert.Equal("403", errors[0].StatusCode);
 		Assert.Equal("Forbidden", errors[0].Title);
@@ -468,7 +468,7 @@ public class JsonApiDocumentTests
 	{
 		TestJsonApiDocument doc = new()
 		{
-			Data = JsonSerializer.SerializeToElement(new Resource
+			Data = JsonSerializer.SerializeToElement(new JsonApiResource
 			{
 				Type = "articles",
 				ID = "1",
@@ -490,10 +490,10 @@ public class JsonApiDocumentTests
 	[Fact(DisplayName = "Serializes document with resource collection")]
 	public void SerializesDocumentWithResourceCollection()
 	{
-		Resource[] resources =
+		JsonApiResource[] resources =
 		[
-			new Resource { Type = "articles", ID = "1" },
-			new Resource { Type = "articles", ID = "2" }
+			new JsonApiResource { Type = "articles", ID = "1" },
+			new JsonApiResource { Type = "articles", ID = "2" }
 		];
 
 		TestJsonApiDocument doc = new()
@@ -519,11 +519,11 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument doc = new()
 		{
 			JsonApi = new JsonApiInfo { Version = "1.1" },
-			Data = JsonSerializer.SerializeToElement(new Resource { Type = "articles", ID = "1" }),
-			Links = new LinksObject { Self = new Link { Href = "https://example.com/articles" } },
+			Data = JsonSerializer.SerializeToElement(new JsonApiResource { Type = "articles", ID = "1" }),
+			Links = new JsonApiLinksObject { Self = new JsonApiLink { Href = new("https://example.com/articles") } },
 			Included =
 			[
-				new Resource { Type = "people", ID = "9" }
+				new JsonApiResource { Type = "people", ID = "9" }
 			],
 			Metadata = new JsonObject { ["copyright"] = "2024" }
 		};
@@ -566,7 +566,7 @@ public class JsonApiDocumentTests
 
 		Assert.NotNull(deserialized);
 		Assert.True(deserialized.HasSingleResource);
-		Resource? resource = deserialized.GetResource();
+		JsonApiResource? resource = deserialized.GetResource();
 		Assert.NotNull(resource);
 		Assert.Equal("articles", resource.Type);
 		Assert.Equal("1", resource.ID);
@@ -595,9 +595,9 @@ public class JsonApiDocumentTests
 
 		Assert.NotNull(deserialized);
 		Assert.True(deserialized.HasCollectionResource);
-		IEnumerable<Resource>? resources = deserialized.GetResourceCollection();
+		IEnumerable<JsonApiResource>? resources = deserialized.GetResourceCollection();
 		Assert.NotNull(resources);
-		Resource[] resourceArray = resources.ToArray();
+		JsonApiResource[] resourceArray = resources.ToArray();
 		Assert.Equal(3, resourceArray.Length);
 		Assert.Equal("1", resourceArray[0].ID);
 		Assert.Equal("2", resourceArray[1].ID);
@@ -628,7 +628,7 @@ public class JsonApiDocumentTests
 		Assert.NotNull(deserialized);
 		Assert.True(deserialized.HasErrors);
 		Assert.NotNull(deserialized.Errors);
-		Error error = deserialized.Errors.First();
+		JsonApiError error = deserialized.Errors.First();
 		Assert.Equal("422", error.StatusCode);
 		Assert.Equal("Validation Error", error.Title);
 		Assert.Equal("Name is required", error.Details);

@@ -7,13 +7,13 @@ namespace Crews.Web.JsonApiClient;
 /// <summary>
 /// Represents a relationship object as defined in section 7.2.2.2 of the JSON:API specification.
 /// </summary>
-public class Relationship
+public class JsonApiRelationship
 {
     /// <summary>
     /// Gets or sets the <c>links</c> property of the relationship object.
     /// </summary>
     [JsonPropertyName("links")]
-    public IEnumerable<Link>? Links { get; set; }
+    public IEnumerable<JsonApiLink>? Links { get; set; }
 
     /// <summary>
     /// Gets or sets the data payload associated with the response or request.

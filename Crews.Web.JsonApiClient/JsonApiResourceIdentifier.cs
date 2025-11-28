@@ -6,7 +6,7 @@ namespace Crews.Web.JsonApiClient;
 /// Represents a reference to a resource by its type and identifier, as defined in section 7.3 of the JSON:API
 /// specification.
 /// </summary>
-public class ResourceIdentifier
+public class JsonApiResourceIdentifier
 {
     /// <summary>
     /// Gets or sets the unique identifier for the object.
