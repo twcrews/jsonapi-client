@@ -7,7 +7,7 @@ namespace Crews.Web.JsonApiClient;
 /// <summary>
 /// Represents a base class for JSON:API top-level objects as defined in section 7.1 of the JSON:API specification.
 /// </summary>
-public abstract class JsonApiDocument
+public class JsonApiDocument
 {
     /// <summary>
     /// Gets or sets the <c>jsonapi</c> property of the document.
