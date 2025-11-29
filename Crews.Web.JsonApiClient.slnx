@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="CHANGELOG.md" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Crews.Web.JsonApiClient.Tests/Crews.Web.JsonApiClient.Tests.csproj" />
+  <Project Path="Crews.Web.JsonApiClient/Crews.Web.JsonApiClient.csproj" />
+</Solution>
