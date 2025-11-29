@@ -178,7 +178,7 @@ public class JsonApiDocumentTests
 		JsonApiResource? resource = doc.GetResource();
 		Assert.NotNull(resource);
 		Assert.Equal("articles", resource.Type);
-		Assert.Equal("1", resource.ID);
+		Assert.Equal("1", resource.Id);
 		Assert.NotNull(resource.Attributes);
 		Assert.Equal("JSON:API paints my bikeshed!", resource.Attributes["title"]!.GetValue<string>());
 	}
@@ -255,10 +255,10 @@ public class JsonApiDocumentTests
 		JsonApiResource[] resourceArray = resources.ToArray();
 		Assert.Equal(2, resourceArray.Length);
 		Assert.Equal("articles", resourceArray[0].Type);
-		Assert.Equal("1", resourceArray[0].ID);
+		Assert.Equal("1", resourceArray[0].Id);
 		Assert.Equal("First Article", resourceArray[0].Attributes!["title"]!.GetValue<string>());
 		Assert.Equal("articles", resourceArray[1].Type);
-		Assert.Equal("2", resourceArray[1].ID);
+		Assert.Equal("2", resourceArray[1].Id);
 		Assert.Equal("Second Article", resourceArray[1].Attributes!["title"]!.GetValue<string>());
 	}
 
@@ -379,9 +379,9 @@ public class JsonApiDocumentTests
 		JsonApiResource[] included = doc.Included.ToArray();
 		Assert.Equal(2, included.Length);
 		Assert.Equal("people", included[0].Type);
-		Assert.Equal("9", included[0].ID);
+		Assert.Equal("9", included[0].Id);
 		Assert.Equal("comments", included[1].Type);
-		Assert.Equal("5", included[1].ID);
+		Assert.Equal("5", included[1].Id);
 	}
 
 	[Fact(DisplayName = "Deserializes document with Metadata property")]
@@ -471,7 +471,7 @@ public class JsonApiDocumentTests
 			Data = JsonSerializer.SerializeToElement(new JsonApiResource
 			{
 				Type = "articles",
-				ID = "1",
+				Id = "1",
 				Attributes = new JsonObject
 				{
 					["title"] = "Test Article"
@@ -492,8 +492,8 @@ public class JsonApiDocumentTests
 	{
 		JsonApiResource[] resources =
 		[
-			new JsonApiResource { Type = "articles", ID = "1" },
-			new JsonApiResource { Type = "articles", ID = "2" }
+			new JsonApiResource { Type = "articles", Id = "1" },
+			new JsonApiResource { Type = "articles", Id = "2" }
 		];
 
 		TestJsonApiDocument doc = new()
@@ -519,11 +519,11 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument doc = new()
 		{
 			JsonApi = new JsonApiInfo { Version = "1.1" },
-			Data = JsonSerializer.SerializeToElement(new JsonApiResource { Type = "articles", ID = "1" }),
+			Data = JsonSerializer.SerializeToElement(new JsonApiResource { Type = "articles", Id = "1" }),
 			Links = new JsonApiLinksObject { Self = new JsonApiLink { Href = new("https://example.com/articles") } },
 			Included =
 			[
-				new JsonApiResource { Type = "people", ID = "9" }
+				new JsonApiResource { Type = "people", Id = "9" }
 			],
 			Metadata = new JsonObject { ["copyright"] = "2024" }
 		};
@@ -569,7 +569,7 @@ public class JsonApiDocumentTests
 		JsonApiResource? resource = deserialized.GetResource();
 		Assert.NotNull(resource);
 		Assert.Equal("articles", resource.Type);
-		Assert.Equal("1", resource.ID);
+		Assert.Equal("1", resource.Id);
 		Assert.Equal("Test Article", resource.Attributes!["title"]!.GetValue<string>());
 		Assert.Equal("Test content", resource.Attributes!["body"]!.GetValue<string>());
 	}
@@ -599,9 +599,9 @@ public class JsonApiDocumentTests
 		Assert.NotNull(resources);
 		JsonApiResource[] resourceArray = resources.ToArray();
 		Assert.Equal(3, resourceArray.Length);
-		Assert.Equal("1", resourceArray[0].ID);
-		Assert.Equal("2", resourceArray[1].ID);
-		Assert.Equal("3", resourceArray[2].ID);
+		Assert.Equal("1", resourceArray[0].Id);
+		Assert.Equal("2", resourceArray[1].Id);
+		Assert.Equal("3", resourceArray[2].Id);
 	}
 
 	[Fact(DisplayName = "Roundtrip serialization preserves error document")]

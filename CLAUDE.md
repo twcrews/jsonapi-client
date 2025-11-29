@@ -55,7 +55,7 @@ JsonApiDocument (abstract base)
 └── Extensions (Dictionary<string, JsonElement>?)
 
 JsonApiResource (extends JsonApiResourceIdentifier)
-├── Type/ID/LocalID (identification)
+├── Type/Id/LocalId (identification)
 ├── Attributes (JsonObject?)
 ├── Relationships (Dictionary<string, JsonApiRelationship>?)
 ├── Links (JsonApiLinksObject?)
@@ -121,7 +121,7 @@ JsonApiResource object(s)
 
 ### Required Properties
 - `JsonApiResourceIdentifier.Type` - required per JSON:API spec
-- `JsonApiResourceIdentifier.ID` or `JsonApiResourceIdentifier.LocalID` - at least one required for resource identification
+- `JsonApiResourceIdentifier.Id` or `JsonApiResourceIdentifier.LocalId` - at least one required for resource identification
 - `JsonApiLink.Href` - required for all links
 
 ### Testing Approach
@@ -142,7 +142,7 @@ JsonApiResource object(s)
 Crews.Web.JsonApiClient/                    # Main library (.NET 8.0)
 ├── JsonApiDocument.cs                      # Abstract base class for all JSON:API documents
 ├── JsonApiResource.cs                      # Resource objects with attributes, relationships
-├── JsonApiResourceIdentifier.cs            # Type/ID identification for resources
+├── JsonApiResourceIdentifier.cs            # Type/Id identification for resources
 ├── JsonApiRelationship.cs                  # Resource relationships
 ├── JsonApiLink.cs                          # Link objects (href, metadata, etc.)
 ├── JsonApiLinksObject.cs                   # Collection of named links (self, related, etc.)

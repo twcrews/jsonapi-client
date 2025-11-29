@@ -12,7 +12,7 @@ public class JsonApiError
     /// Gets or sets the unique identifier for this particular occurrence of the problem.
     /// </summary>
     [JsonPropertyName("id")]
-    public string? ID { get; set; }
+    public string? Id { get; set; }
 
     /// <summary>
     /// Gets or sets the links that provide additional information about the error.

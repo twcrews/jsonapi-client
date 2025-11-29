@@ -33,7 +33,7 @@ if (document.HasErrors)
 else if (document.HasSingleResource)
 {
     var resource = document.GetResource();
-    Console.WriteLine($"Resource: {resource.Type} with ID {resource.ID}");
+    Console.WriteLine($"Resource: {resource.Type} with ID {resource.Id}");
 }
 else if (document.HasCollectionResource)
 {
@@ -48,7 +48,7 @@ else if (document.HasCollectionResource)
 // Access resource identification
 var resource = document.GetResource();
 Console.WriteLine($"Type: {resource.Type}");
-Console.WriteLine($"ID: {resource.ID}");
+Console.WriteLine($"ID: {resource.Id}");
 
 // Access attributes (flexible JSON object)
 if (resource.Attributes != null)
@@ -81,7 +81,7 @@ if (resource.Relationships != null &&
 {
     // Get related resource identifier
     var authorId = authorRel.Data?.Deserialize<JsonApiResourceIdentifier>();
-    Console.WriteLine($"Author: {authorId?.Type}/{authorId?.ID}");
+    Console.WriteLine($"Author: {authorId?.Type}/{authorId?.Id}");
 
     // Navigate relationship links
     if (authorRel.Links?.Related != null)
@@ -216,7 +216,7 @@ var newDocument = new JsonApiDocument
     Data = JsonSerializer.SerializeToElement(new JsonApiResource
     {
         Type = "articles",
-        ID = "123",
+        Id = "123",
         Attributes = new JsonObject
         {
             ["title"] = "Hello World",

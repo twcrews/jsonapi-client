@@ -12,13 +12,13 @@ public class JsonApiResourceIdentifier
     /// Gets or sets the unique identifier for the object.
     /// </summary>
     [JsonPropertyName("id")]
-    public string? ID { get; set; }
+    public string? Id { get; set; }
 
     /// <summary>
     /// Gets or sets the local identifier associated with the object.
     /// </summary>
     [JsonPropertyName("lid")]
-    public string? LocalID { get; set; }
+    public string? LocalId { get; set; }
 
     /// <summary>
     /// Gets or sets the type identifier for the object represented by this instance.
