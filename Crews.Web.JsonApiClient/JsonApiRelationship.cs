@@ -19,7 +19,7 @@ public class JsonApiRelationship
     /// Gets or sets the data payload associated with the response or request.
     /// </summary>
     [JsonPropertyName("data")]
-    public object? Data { get; set; }
+    public JsonElement? Data { get; set; }
 
     /// <summary>
     /// Gets or sets additional metadata associated with the object.
