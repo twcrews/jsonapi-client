@@ -75,38 +75,32 @@ public class JsonApiDocument
     /// Gets a value indicating whether the <see cref="Errors"/> property contains one or more objects.
     /// </summary>
     public bool HasErrors => Errors is not null && Errors.Any();
+}
 
+/// <summary>
+/// Represents a JSON:API top-level object with a generic single resource type as defined in section 7.1 of the
+/// JSON:API specification.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
+{
     /// <summary>
-    /// Attempts to deserialize the <see cref="Data"/> property as a <see cref="JsonApiResource"/> object.
+    /// Gets or sets the primary data payload associated with the document.
     /// </summary>
-    /// <returns>
-    /// The deserialized <see cref="JsonApiResource"/> object if <see cref="Data"/> is a valid resource object, or
-    /// <see langword="null"/> if <see cref="Data"/> is <see langword="null"/>.
-    /// </returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public JsonApiResource? GetResource()
-    {
-        if (Data is null) return null;
-        if (Data is JsonElement data && data.ValueKind == JsonValueKind.Object)
-            return data.Deserialize<JsonApiResource>();
+    [JsonPropertyName("data")]
+    public new T? Data { get; set; }
+}
 
-        throw new InvalidOperationException(Constants.Exceptions.GetResourceInvalidType);
-    }
-
+/// <summary>
+/// Represents a JSON:API top-level object with a generic resource collection type as defined in section 7.1 of the
+/// JSON:API specification.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class JsonApiCollectionDocument<T> : JsonApiDocument where T : IEnumerable<JsonApiResource>
+{
     /// <summary>
-    /// Attempts to deserialize the <see cref="Data"/> property as a collection of <see cref="JsonApiResource"/> objects.
+    /// Gets or sets the primary data payload associated with the document.
     /// </summary>
-    /// <returns>
-    /// The deserialized <see cref="JsonApiResource"/> collection if <see cref="Data"/> is a valid resource array, or
-    /// <see langword="null"/> if <see cref="Data"/> is <see langword="null"/>.
-    /// </returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public IEnumerable<JsonApiResource>? GetResourceCollection()
-    {
-        if (Data is null) return null;
-        if (Data is JsonElement data && data.ValueKind == JsonValueKind.Array)
-            return data.Deserialize<JsonApiResource[]>();
-
-        throw new InvalidOperationException(Constants.Exceptions.GetResourceCollectionInvalidType);
-    }
+    [JsonPropertyName("data")]
+    public new T? Data { get; set; }
 }

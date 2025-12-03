@@ -32,3 +32,16 @@ public class JsonApiResource : JsonApiResourceIdentifier
     [JsonPropertyName("meta")]
     public JsonObject? Metadata { get; set; }
 }
+
+/// <summary>
+/// Represents a resource object with a generic <see cref="Attributes"/> type as defined in section 7.2 of the JSON:API
+/// specification.
+/// </summary>
+/// <typeparam name="T">The type of the <see cref="Attributes"/> property.</typeparam>
+public class JsonApiResource<T> : JsonApiResource
+{
+    /// <summary>
+    /// Gets or sets the collection of custom attributes associated with this object.
+    /// </summary>
+    public new T? Attributes { get; set; }
+}
