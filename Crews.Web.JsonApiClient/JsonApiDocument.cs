@@ -75,6 +75,20 @@ public class JsonApiDocument
     /// Gets a value indicating whether the <see cref="Errors"/> property contains one or more objects.
     /// </summary>
     public bool HasErrors => Errors is not null && Errors.Any();
+
+    /// <summary>
+    /// Deserializes the specified JSON string into a <see cref="JsonApiDocument"/> instance.
+    /// </summary>
+    /// <remarks>This method uses <see cref="System.Text.Json.JsonSerializer"/> for deserialization. The input
+    /// JSON must conform to the JSON:API specification for successful parsing.</remarks>
+    /// <param name="json">The JSON string representing a JSON:API document to deserialize.</param>
+    /// <param name="options">Optional serialization options to control the deserialization behavior.</param>
+    /// <returns>
+    /// A <see cref="JsonApiDocument"/> instance representing the deserialized data, or <see langword="null"/> if the
+    /// input is invalid or does not match the expected format.
+    /// </returns>
+    public static JsonApiDocument? Deserialize(string json, JsonSerializerOptions? options = null)
+        => JsonSerializer.Deserialize<JsonApiDocument>(json, options);
 }
 
 /// <summary>
@@ -89,6 +103,21 @@ public class JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
     /// </summary>
     [JsonPropertyName("data")]
     public new T? Data { get; set; }
+
+    /// <summary>
+    /// Deserializes the specified JSON string into a strongly typed <see cref="JsonApiDocument{T}"/> instance.
+    /// </summary>
+    /// <remarks>This method uses <see cref="System.Text.Json.JsonSerializer"/> for deserialization. The
+    /// generic type parameter <typeparamref name="T"/> must match the expected resource type in the JSON:API
+    /// document.</remarks>
+    /// <param name="json">The JSON string representing a JSON:API document to deserialize.</param>
+    /// <param name="options">Optional serialization options to control the deserialization process.</param>
+    /// <returns>
+    /// A <see cref="JsonApiDocument{T}"/> instance representing the deserialized JSON:API document, or <see
+    /// langword="null"/> if the input is null or invalid.
+    /// </returns>
+    public static new JsonApiDocument<T>? Deserialize(string json, JsonSerializerOptions? options = null)
+        => JsonSerializer.Deserialize<JsonApiDocument<T>>(json, options);
 }
 
 /// <summary>
@@ -103,4 +132,16 @@ public class JsonApiCollectionDocument<T> : JsonApiDocument where T : IEnumerabl
     /// </summary>
     [JsonPropertyName("data")]
     public new T? Data { get; set; }
+
+    /// <summary>
+    /// Deserializes the specified JSON string into a <see cref="JsonApiCollectionDocument{T}"/> instance.
+    /// </summary>
+    /// <param name="json">The JSON string representing a collection document to deserialize.</param>
+    /// <param name="options">Options to control the behavior of the deserialization.</param>
+    /// <returns>
+    /// A <see cref="JsonApiCollectionDocument{T}"/> instance representing the deserialized data, or <see
+    /// langword="null"/> if the input is null or empty.
+    /// </returns>
+    public static new JsonApiCollectionDocument<T>? Deserialize(string json, JsonSerializerOptions? options = null)
+        => JsonSerializer.Deserialize<JsonApiCollectionDocument<T>>(json, options);
 }

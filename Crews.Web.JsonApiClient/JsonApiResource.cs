@@ -45,3 +45,17 @@ public class JsonApiResource<T> : JsonApiResource
     /// </summary>
     public new T? Attributes { get; set; }
 }
+
+/// <summary>
+/// Represents a JSON:API resource object with customizable attributes and relationships.
+/// </summary>
+/// <typeparam name="TAttributes">The type used to represent the attributes of the resource object.</typeparam>
+/// <typeparam name="TRelationships">The type used to represent the relationships associated with the resource object.</typeparam>
+public class JsonApiResource<TAttributes, TRelationships> : JsonApiResource<TAttributes>
+{
+    /// <summary>
+    /// Gets or sets the collection of relationships associated with this object.
+    /// </summary>
+    [JsonPropertyName("relationships")]
+    public new TRelationships? Relationships { get; set; }
+}
