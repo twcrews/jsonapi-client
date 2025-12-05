@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -79,7 +80,7 @@ public class JsonApiDocument
     /// <summary>
     /// Deserializes the specified JSON string into a <see cref="JsonApiDocument"/> instance.
     /// </summary>
-    /// <remarks>This method uses <see cref="System.Text.Json.JsonSerializer"/> for deserialization. The input
+    /// <remarks>This method uses <see cref="JsonSerializer"/> for deserialization. The input
     /// JSON must conform to the JSON:API specification for successful parsing.</remarks>
     /// <param name="json">The JSON string representing a JSON:API document to deserialize.</param>
     /// <param name="options">Optional serialization options to control the deserialization behavior.</param>
@@ -89,13 +90,44 @@ public class JsonApiDocument
     /// </returns>
     public static JsonApiDocument? Deserialize(string json, JsonSerializerOptions? options = null)
         => JsonSerializer.Deserialize<JsonApiDocument>(json, options);
+
+    /// <summary>
+    /// Deserializes the specified JSON string into a JSON:API document with a user-defined data object.
+    /// </summary>
+    /// <remarks>This method uses <see cref="JsonSerializer"/> for deserialization. The input
+    /// JSON must conform to the JSON:API specification for successful parsing.</remarks>
+    /// <param name="json">The JSON string representing a JSON:API document to deserialize.</param>
+    /// <param name="options">Optional serialization options to control the deserialization behavior.</param>
+    /// <returns>
+    /// A <see cref="JsonApiDocument{T}"/> instance representing the deserialized data, or <see langword="null"/> if
+    /// the input is invalid or does not match the expected format.
+    /// </returns>
+    public static JsonApiDocument<T>? Deserialize<T>(string json, JsonSerializerOptions? options = null)
+        where T : JsonApiResource
+        => JsonSerializer.Deserialize<JsonApiDocument<T>>(json, options);
+
+
+    /// <summary>
+    /// Deserializes the specified JSON string into a JSON:API document with a user-defined data collection.
+    /// </summary>
+    /// <remarks>This method uses <see cref="JsonSerializer"/> for deserialization. The input
+    /// JSON must conform to the JSON:API specification for successful parsing.</remarks>
+    /// <param name="json">The JSON string representing a JSON:API document to deserialize.</param>
+    /// <param name="options">Optional serialization options to control the deserialization behavior.</param>
+    /// <returns>
+    /// A <see cref="JsonApiCollectionDocument{T}"/> instance representing the deserialized data, or <see
+    /// langword="null"/> if the input is invalid or does not match the expected format.
+    /// </returns>
+    public static JsonApiCollectionDocument<T>? DeserializeCollection<T>(string json, JsonSerializerOptions? options = null)
+        where T : IEnumerable<JsonApiResource>
+        => JsonSerializer.Deserialize<JsonApiCollectionDocument<T>>(json, options);
 }
 
 /// <summary>
 /// Represents a JSON:API top-level object with a generic single resource type as defined in section 7.1 of the
 /// JSON:API specification.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">The derived <see cref="JsonApiResource"/> type.</typeparam>
 public class JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
 {
     /// <summary>
@@ -105,26 +137,29 @@ public class JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
     public new T? Data { get; set; }
 
     /// <summary>
-    /// Deserializes the specified JSON string into a strongly typed <see cref="JsonApiDocument{T}"/> instance.
+    /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
     /// </summary>
-    /// <remarks>This method uses <see cref="System.Text.Json.JsonSerializer"/> for deserialization. The
-    /// generic type parameter <typeparamref name="T"/> must match the expected resource type in the JSON:API
-    /// document.</remarks>
-    /// <param name="json">The JSON string representing a JSON:API document to deserialize.</param>
-    /// <param name="options">Optional serialization options to control the deserialization process.</param>
-    /// <returns>
-    /// A <see cref="JsonApiDocument{T}"/> instance representing the deserialized JSON:API document, or <see
-    /// langword="null"/> if the input is null or invalid.
-    /// </returns>
-    public static new JsonApiDocument<T>? Deserialize(string json, JsonSerializerOptions? options = null)
-        => JsonSerializer.Deserialize<JsonApiDocument<T>>(json, options);
+    /// <remarks>
+    /// Since this class is strongly typed to a single resource type, this property always returns <see
+    /// langword="true"/>.
+    /// </remarks>
+    public new bool HasSingleResource => true;
+
+    /// <summary>
+    /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
+    /// </summary>
+    /// <remarks>
+    /// Since this class is strongly typed to a single resource type, this property always returns <see
+    /// langword="false"/>.
+    /// </remarks>
+    public new bool HasCollectionResource => false;
 }
 
 /// <summary>
 /// Represents a JSON:API top-level object with a generic resource collection type as defined in section 7.1 of the
 /// JSON:API specification.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">The derived <see cref="IEnumerable{JsonApiResource}"/> type</typeparam>
 public class JsonApiCollectionDocument<T> : JsonApiDocument where T : IEnumerable<JsonApiResource>
 {
     /// <summary>
@@ -134,14 +169,20 @@ public class JsonApiCollectionDocument<T> : JsonApiDocument where T : IEnumerabl
     public new T? Data { get; set; }
 
     /// <summary>
-    /// Deserializes the specified JSON string into a <see cref="JsonApiCollectionDocument{T}"/> instance.
+    /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
     /// </summary>
-    /// <param name="json">The JSON string representing a collection document to deserialize.</param>
-    /// <param name="options">Options to control the behavior of the deserialization.</param>
-    /// <returns>
-    /// A <see cref="JsonApiCollectionDocument{T}"/> instance representing the deserialized data, or <see
-    /// langword="null"/> if the input is null or empty.
-    /// </returns>
-    public static new JsonApiCollectionDocument<T>? Deserialize(string json, JsonSerializerOptions? options = null)
-        => JsonSerializer.Deserialize<JsonApiCollectionDocument<T>>(json, options);
+    /// <remarks>
+    /// Since this class is strongly typed to a single resource type, this property always returns <see
+    /// langword="false"/>.
+    /// </remarks>
+    public new bool HasSingleResource => false;
+
+    /// <summary>
+    /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
+    /// </summary>
+    /// <remarks>
+    /// Since this class is strongly typed to a single resource type, this property always returns <see
+    /// langword="true"/>.
+    /// </remarks>
+    public new bool HasCollectionResource => true;
 }
