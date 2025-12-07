@@ -128,13 +128,13 @@ public class JsonApiDocument
 /// JSON:API specification.
 /// </summary>
 /// <typeparam name="T">The derived <see cref="JsonApiResource"/> type.</typeparam>
-public class JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
+public class JsonApiDocument<T> : JsonApiDocument
 {
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
     [JsonPropertyName("data")]
-    public new T? Data { get; set; }
+    public new JsonApiResource<T>? Data { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
@@ -185,4 +185,36 @@ public class JsonApiCollectionDocument<T> : JsonApiDocument where T : IEnumerabl
     /// langword="true"/>.
     /// </remarks>
     public new bool HasCollectionResource => true;
+}
+
+public class JsonApiDocument<TResource, TIncluded> : JsonApiDocument
+    where TResource : JsonApiResource
+    where TIncluded : IEnumerable<JsonApiResource>
+{
+    /// <summary>
+    /// Gets or sets the primary data payload associated with the document.
+    /// </summary>
+    [JsonPropertyName("data")]
+    public new TResource? Data { get; set; }
+    /// <summary>
+    /// Gets or sets the <c>included</c> property of the document.
+    /// </summary>
+    [JsonPropertyName("included")]
+    public new IEnumerable<TIncluded>? Included { get; set; }
+    /// <summary>
+    /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
+    /// </summary>
+    /// <remarks>
+    /// Since this class is strongly typed to a single resource type, this property always returns <see
+    /// langword="true"/>.
+    /// </remarks>
+    public new bool HasSingleResource => true;
+    /// <summary>
+    /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
+    /// </summary>
+    /// <remarks>
+    /// Since this class is strongly typed to a single resource type, this property always returns <see
+    /// langword="false"/>.
+    /// </remarks>
+    public new bool HasCollectionResource => false;
 }
