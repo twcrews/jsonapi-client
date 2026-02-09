@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <PackageId>Crews.Web.JsonApiClient</PackageId>
-    <PackageVersion>2.0.0</PackageVersion>
+    <PackageVersion>3.0.0</PackageVersion>
     <Authors>Tommy Crews</Authors>
     <Description>
       A library containing serialization models and methods for the JSON:API specification.

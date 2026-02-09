@@ -54,15 +54,6 @@ public class JsonApiDocument
     public Dictionary<string, JsonElement>? Extensions { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
-    /// </summary>
-    /// <remarks>
-    /// This property returns <see langword="true"/> if <see cref="Data"/> is a JSON object. No other validation or
-    /// type checking is performed.
-    /// </remarks>
-    public bool HasSingleResource => Data?.ValueKind == JsonValueKind.Object;
-
-    /// <summary>
     /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
     /// </summary>
     /// <remarks>
@@ -77,36 +68,81 @@ public class JsonApiDocument
     public bool HasErrors => Errors is not null && Errors.Any();
 
     /// <summary>
-    /// Attempts to deserialize the <see cref="Data"/> property as a <see cref="JsonApiResource"/> object.
+    /// Deserializes the specified JSON string into a <see cref="JsonApiDocument"/> instance.
     /// </summary>
+    /// <remarks>This method uses <see cref="JsonSerializer"/> for deserialization. The input
+    /// JSON must conform to the JSON:API specification for successful parsing.</remarks>
+    /// <param name="json">The JSON string representing a JSON:API document to deserialize.</param>
+    /// <param name="options">Optional serialization options to control the deserialization behavior.</param>
     /// <returns>
-    /// The deserialized <see cref="JsonApiResource"/> object if <see cref="Data"/> is a valid resource object, or
-    /// <see langword="null"/> if <see cref="Data"/> is <see langword="null"/>.
+    /// A <see cref="JsonApiDocument"/> instance representing the deserialized data, or <see langword="null"/> if the
+    /// input is invalid or does not match the expected format.
     /// </returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public JsonApiResource? GetResource()
-    {
-        if (Data is null) return null;
-        if (Data is JsonElement data && data.ValueKind == JsonValueKind.Object)
-            return data.Deserialize<JsonApiResource>();
+    public static JsonApiDocument? Deserialize(string json, JsonSerializerOptions? options = null)
+        => JsonSerializer.Deserialize<JsonApiDocument>(json, options);
+}
 
-        throw new InvalidOperationException(Constants.Exceptions.GetResourceInvalidType);
-    }
+/// <summary>
+/// Represents a JSON:API top-level object with a generic single resource type as defined in section 7.1 of the
+/// JSON:API specification.
+/// </summary>
+/// <typeparam name="T">The underlying resource type.</typeparam>
+public class JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
+{
+    /// <summary>
+    /// Gets or sets the primary data payload associated with the document.
+    /// </summary>
+    [JsonPropertyName("data")]
+    public new T? Data { get; set; }
 
     /// <summary>
-    /// Attempts to deserialize the <see cref="Data"/> property as a collection of <see cref="JsonApiResource"/> objects.
+    /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
     /// </summary>
-    /// <returns>
-    /// The deserialized <see cref="JsonApiResource"/> collection if <see cref="Data"/> is a valid resource array, or
-    /// <see langword="null"/> if <see cref="Data"/> is <see langword="null"/>.
-    /// </returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public IEnumerable<JsonApiResource>? GetResourceCollection()
-    {
-        if (Data is null) return null;
-        if (Data is JsonElement data && data.ValueKind == JsonValueKind.Array)
-            return data.Deserialize<JsonApiResource[]>();
+    public new bool HasCollectionResource => false;
 
-        throw new InvalidOperationException(Constants.Exceptions.GetResourceCollectionInvalidType);
-    }
+    /// <summary>
+    /// Deserializes the specified JSON string into a JSON:API document with a user-defined data object.
+    /// </summary>
+    /// <remarks>This method uses <see cref="JsonSerializer"/> for deserialization. The input
+    /// JSON must conform to the JSON:API specification for successful parsing.</remarks>
+    /// <param name="json">The JSON string representing a JSON:API document to deserialize.</param>
+    /// <param name="options">Optional serialization options to control the deserialization behavior.</param>
+    /// <returns>
+    /// A <see cref="JsonApiDocument{T}"/> instance representing the deserialized data, or <see langword="null"/> if
+    /// the input is invalid or does not match the expected format.
+    /// </returns>
+    public static new JsonApiDocument<T>? Deserialize(string json, JsonSerializerOptions? options = null)
+        => JsonSerializer.Deserialize<JsonApiDocument<T>>(json, options);
+}
+
+/// <summary>
+/// Represents a JSON:API top-level object with a generic collection resource type as defined in section 7.1 of the
+/// JSON:API specification.
+/// </summary>
+/// <typeparam name="T">The underlying resource type.</typeparam>
+public class JsonApiCollectionDocument<T> : JsonApiDocument where T : JsonApiResource
+{
+    /// <summary>
+    /// Gets or sets the primary data payload associated with the document.
+    /// </summary>
+    [JsonPropertyName("data")]
+    public new IEnumerable<T>? Data { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
+    /// </summary>
+    public new bool HasCollectionResource => true;
+
+    /// <summary>
+    /// Deserializes the specified JSON string into a JSON:API document with a user-defined collection of data objects.
+    /// </summary>
+    /// <param name="json">The JSON string representing a JSON:API document to deserialize.</param>
+    /// <param name="options">Optional serialization options to control the deserialization behavior.</param>
+    /// <returns>
+    /// A <see cref="JsonApiDocument{T}"/> instance representing the deserialized data, or <see langword="null"/> if
+    /// the input is invalid or does not match the expected format.
+    /// </returns>
+    public static new JsonApiCollectionDocument<T>? Deserialize(
+        string json, JsonSerializerOptions? options = null)
+        => JsonSerializer.Deserialize<JsonApiCollectionDocument<T>>(json, options);
 }
