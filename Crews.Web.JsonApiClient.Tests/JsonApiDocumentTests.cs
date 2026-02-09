@@ -15,58 +15,6 @@ public class JsonApiDocumentTests
 	// Concrete implementation for testing abstract JsonApiDocument
 	private class TestJsonApiDocument : JsonApiDocument { }
 
-	#region HasSingleResource Tests
-
-	[Fact(DisplayName = "HasSingleResource returns true when Data is an object")]
-	public void HasSingleResourceReturnsTrueForObject()
-	{
-		const string json = """{"data": {"type": "articles", "id": "1"}}""";
-
-		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
-
-		Assert.NotNull(doc);
-		Assert.True(doc.HasSingleResource);
-		Assert.False(doc.HasCollectionResource);
-	}
-
-	[Fact(DisplayName = "HasSingleResource returns false when Data is an array")]
-	public void HasSingleResourceReturnsFalseForArray()
-	{
-		const string json = """{"data": [{"type": "articles", "id": "1"}]}""";
-
-		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
-
-		Assert.NotNull(doc);
-		Assert.False(doc.HasSingleResource);
-		Assert.True(doc.HasCollectionResource);
-	}
-
-	[Fact(DisplayName = "HasSingleResource returns false when Data is null")]
-	public void HasSingleResourceReturnsFalseForNull()
-	{
-		const string json = """{"data": null}""";
-
-		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
-
-		Assert.NotNull(doc);
-		Assert.False(doc.HasSingleResource);
-		Assert.False(doc.HasCollectionResource);
-	}
-
-	[Fact(DisplayName = "HasSingleResource returns false when Data is not present")]
-	public void HasSingleResourceReturnsFalseWhenDataNotPresent()
-	{
-		const string json = """{"meta": {"version": "1.0"}}""";
-
-		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
-
-		Assert.NotNull(doc);
-		Assert.False(doc.HasSingleResource);
-		Assert.False(doc.HasCollectionResource);
-	}
-
-	#endregion
-
 	#region HasCollectionResource Tests
 
 	[Fact(DisplayName = "HasCollectionResource returns true when Data is an array")]
@@ -78,7 +26,6 @@ public class JsonApiDocumentTests
 
 		Assert.NotNull(doc);
 		Assert.True(doc.HasCollectionResource);
-		Assert.False(doc.HasSingleResource);
 	}
 
 	[Fact(DisplayName = "HasCollectionResource returns true when Data is an empty array")]
@@ -90,7 +37,6 @@ public class JsonApiDocumentTests
 
 		Assert.NotNull(doc);
 		Assert.True(doc.HasCollectionResource);
-		Assert.False(doc.HasSingleResource);
 	}
 
 	[Fact(DisplayName = "HasCollectionResource returns false when Data is an object")]
@@ -102,7 +48,6 @@ public class JsonApiDocumentTests
 
 		Assert.NotNull(doc);
 		Assert.False(doc.HasCollectionResource);
-		Assert.True(doc.HasSingleResource);
 	}
 
 	#endregion
@@ -407,7 +352,7 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument? deserialized = JsonSerializer.Deserialize<TestJsonApiDocument>(serialized, _options);
 
 		Assert.NotNull(deserialized);
-		Assert.True(deserialized.HasSingleResource);
+		Assert.False(deserialized.HasCollectionResource);
 		JsonApiResource? resource = JsonSerializer.Deserialize<JsonApiResource>((JsonElement)deserialized.Data!);
         Assert.NotNull(resource);
 		Assert.Equal("articles", resource.Type);
@@ -494,7 +439,7 @@ public class JsonApiDocumentTests
 		const string validJson = """{"data": {"type": "articles", "id": "1"}}""";
 		JsonApiDocument? doc = JsonApiDocument.Deserialize(validJson, _options);
 		Assert.NotNull(doc);
-		Assert.True(doc.HasSingleResource);
+		Assert.False(doc.HasCollectionResource);
     }
 
 	[Fact(DisplayName = "Deserialize generic static method returns null for null JSON")]
@@ -511,7 +456,7 @@ public class JsonApiDocumentTests
 		const string validJson = """{"data": {"type": "articles", "id": "1"}}""";
 		JsonApiDocument<JsonApiResource>? doc = JsonApiDocument.Deserialize<JsonApiResource>(validJson, _options);
 		Assert.NotNull(doc);
-		Assert.True(doc.HasSingleResource);
+		Assert.False(doc.HasCollectionResource);
     }
 
 	[Fact(DisplayName = "DeserializeCollection generic static method returns null for null JSON")]
