@@ -1,4 +1,4 @@
-namespace Crews.Web.JsonApiClient;
+namespace Crews.Web.JsonApiClient.Utility;
 
 static class Constants
 {
