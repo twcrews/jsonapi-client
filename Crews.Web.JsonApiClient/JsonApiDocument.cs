@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -55,15 +54,6 @@ public class JsonApiDocument
     public Dictionary<string, JsonElement>? Extensions { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
-    /// </summary>
-    /// <remarks>
-    /// This property returns <see langword="true"/> if <see cref="Data"/> is a JSON object. No other validation or
-    /// type checking is performed.
-    /// </remarks>
-    public bool HasSingleResource => Data?.ValueKind == JsonValueKind.Object;
-
-    /// <summary>
     /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
     /// </summary>
     /// <remarks>
@@ -106,20 +96,18 @@ public class JsonApiDocument
         where T : JsonApiResource
         => JsonSerializer.Deserialize<JsonApiDocument<T>>(json, options);
 
-
     /// <summary>
-    /// Deserializes the specified JSON string into a JSON:API document with a user-defined data collection.
+    /// Deserializes the specified JSON string into a JSON:API document with a user-defined collection of data objects.
     /// </summary>
-    /// <remarks>This method uses <see cref="JsonSerializer"/> for deserialization. The input
-    /// JSON must conform to the JSON:API specification for successful parsing.</remarks>
+    /// <typeparam name="T">The underlying type of each item in the collection.</typeparam>
     /// <param name="json">The JSON string representing a JSON:API document to deserialize.</param>
     /// <param name="options">Optional serialization options to control the deserialization behavior.</param>
     /// <returns>
-    /// A <see cref="JsonApiCollectionDocument{T}"/> instance representing the deserialized data, or <see
-    /// langword="null"/> if the input is invalid or does not match the expected format.
+    /// A <see cref="JsonApiDocument{T}"/> instance representing the deserialized data, or <see langword="null"/> if
+    /// the input is invalid or does not match the expected format.
     /// </returns>
-    public static JsonApiCollectionDocument<T>? DeserializeCollection<T>(string json, JsonSerializerOptions? options = null)
-        where T : IEnumerable<JsonApiResource>
+    public static JsonApiCollectionDocument<T>? DeserializeCollection<T>(
+        string json, JsonSerializerOptions? options = null)
         => JsonSerializer.Deserialize<JsonApiCollectionDocument<T>>(json, options);
 }
 
@@ -127,7 +115,7 @@ public class JsonApiDocument
 /// Represents a JSON:API top-level object with a generic single resource type as defined in section 7.1 of the
 /// JSON:API specification.
 /// </summary>
-/// <typeparam name="T">The derived <see cref="JsonApiResource"/> type.</typeparam>
+/// <typeparam name="T">The underlying resource type.</typeparam>
 public class JsonApiDocument<T> : JsonApiDocument
 {
     /// <summary>
@@ -139,82 +127,24 @@ public class JsonApiDocument<T> : JsonApiDocument
     /// <summary>
     /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
     /// </summary>
-    /// <remarks>
-    /// Since this class is strongly typed to a single resource type, this property always returns <see
-    /// langword="true"/>.
-    /// </remarks>
-    public new bool HasSingleResource => true;
-
-    /// <summary>
-    /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
-    /// </summary>
-    /// <remarks>
-    /// Since this class is strongly typed to a single resource type, this property always returns <see
-    /// langword="false"/>.
-    /// </remarks>
     public new bool HasCollectionResource => false;
 }
 
 /// <summary>
-/// Represents a JSON:API top-level object with a generic resource collection type as defined in section 7.1 of the
+/// Represents a JSON:API top-level object with a generic collection resource type as defined in section 7.1 of the
 /// JSON:API specification.
 /// </summary>
-/// <typeparam name="T">The derived <see cref="IEnumerable{JsonApiResource}"/> type</typeparam>
-public class JsonApiCollectionDocument<T> : JsonApiDocument where T : IEnumerable<JsonApiResource>
+/// <typeparam name="T">The underlying resource type.</typeparam>
+public class JsonApiCollectionDocument<T> : JsonApiDocument
 {
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
     [JsonPropertyName("data")]
-    public new T? Data { get; set; }
-
-    /// <summary>
-    /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
-    /// </summary>
-    /// <remarks>
-    /// Since this class is strongly typed to a single resource type, this property always returns <see
-    /// langword="false"/>.
-    /// </remarks>
-    public new bool HasSingleResource => false;
+    public new IEnumerable<JsonApiResource<T>>? Data { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
     /// </summary>
-    /// <remarks>
-    /// Since this class is strongly typed to a single resource type, this property always returns <see
-    /// langword="true"/>.
-    /// </remarks>
     public new bool HasCollectionResource => true;
-}
-
-public class JsonApiDocument<TResource, TIncluded> : JsonApiDocument
-    where TResource : JsonApiResource
-    where TIncluded : IEnumerable<JsonApiResource>
-{
-    /// <summary>
-    /// Gets or sets the primary data payload associated with the document.
-    /// </summary>
-    [JsonPropertyName("data")]
-    public new TResource? Data { get; set; }
-    /// <summary>
-    /// Gets or sets the <c>included</c> property of the document.
-    /// </summary>
-    [JsonPropertyName("included")]
-    public new IEnumerable<TIncluded>? Included { get; set; }
-    /// <summary>
-    /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
-    /// </summary>
-    /// <remarks>
-    /// Since this class is strongly typed to a single resource type, this property always returns <see
-    /// langword="true"/>.
-    /// </remarks>
-    public new bool HasSingleResource => true;
-    /// <summary>
-    /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
-    /// </summary>
-    /// <remarks>
-    /// Since this class is strongly typed to a single resource type, this property always returns <see
-    /// langword="false"/>.
-    /// </remarks>
-    public new bool HasCollectionResource => false;
 }
