@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `ReadJsonApiDocumentAsync<T>`
   - `ReadJsonApiCollectionDocumentAsync<T>`
 
+### Changed
+
+- **Breaking change:** The `Constants` class has been moved to the `Crews.Web.JsonApiClient.Utility` namespace.
+
 ### Removed
 
 - **Breaking change:** `GetResource()` method from `JsonApiDocument` (replaced by strongly-typed `JsonApiDocument<T>.Data` property or manual deserialization of `JsonApiDocument.Data`)
