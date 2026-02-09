@@ -12,13 +12,59 @@ dotnet add package Crews.Web.JsonApiClient
 
 ## Quick Start
 
-### Basic Deserialization (Weakly-Typed)
+```csharp
+// Step 1: Define your base model
+public class Article
+{
+    public string? Title { get; set; }
+    public string? Body { get; set; }
+    public DateTime? PublishedAt { get; set; }
+}
+
+// Step 2: Define a strongly-typed resource class extending JsonApiResource<T>
+public class ArticleResource : JsonApiResource<Article> { }
+
+// Step 3: Deserialize using the static Deserialize() method
+string json = /* your JSON:API document */;
+var document = JsonApiDocument<ArticleResource>.Deserialize(json);
+
+// Step 4: Access strongly-typed data with full IntelliSense support!
+if (document.HasErrors)
+{
+    foreach (var error in document.Errors)
+    {
+        Console.WriteLine($"Error {error.Status}: {error.Title}");
+    }
+}
+else if (document.Data != null)
+{
+    // Data is strongly-typed as Article - get full IntelliSense!
+    Console.WriteLine($"Title: {document.Data.Attributes?.Title}");
+    Console.WriteLine($"Published: {document.Data.Attributes?.PublishedAt}");
+
+    // Access typed relationships
+    var authorId = document.Data.Relationships?.Author?.Data?.Id;
+    Console.WriteLine($"Author ID: {authorId}");
+}
+
+// For collection documents, use JsonApiCollectionDocument<T>
+var collection = JsonApiCollectionDocument<ArticleResource>.Deserialize(json);
+
+if (collection.Data != null)
+{
+    foreach (var article in collection.Data)
+    {
+        Console.WriteLine($"Article: {article.Attributes?.Title}");
+    }
+}
+```
+
+### Weakly-Typed Deserialization (For Dynamic Schemas)
+
+If you're working with dynamic or unknown schemas, you can use the weakly-typed base classes:
 
 ```csharp
-using System.Text.Json;
-using Crews.Web.JsonApiClient;
-
-// Deserialize a JSON:API document
+// Deserialize without custom types
 string json = /* your JSON:API document */;
 var document = JsonApiDocument.Deserialize(json);
 
@@ -30,82 +76,21 @@ if (document.HasErrors)
         Console.WriteLine($"Error {error.Status}: {error.Title}");
     }
 }
-else if (document.HasSingleResource)
-{
-    // Manually deserialize the Data property
-    var resource = document.Data?.Deserialize<JsonApiResource>();
-    Console.WriteLine($"Resource: {resource?.Type} with ID {resource?.Id}");
-}
 else if (document.HasCollectionResource)
 {
     // Manually deserialize the Data property
     var resources = document.Data?.Deserialize<List<JsonApiResource>>();
     Console.WriteLine($"Found {resources?.Count} resources");
 }
-```
-
-### Strongly-Typed Deserialization
-
-For better type safety and IntelliSense support, use the generic subclasses:
-
-```csharp
-// Define your strongly-typed resource
-public class Article : JsonApiResource<ArticleAttributes, ArticleRelationships>
+else
 {
-}
+    // Single resource - manually deserialize the Data property
+    var resource = document.Data?.Deserialize<JsonApiResource>();
+    Console.WriteLine($"Resource: {resource?.Type} with ID {resource?.Id}");
 
-public class ArticleAttributes
-{
-    [JsonPropertyName("title")]
-    public string? Title { get; set; }
-
-    [JsonPropertyName("body")]
-    public string? Body { get; set; }
-
-    [JsonPropertyName("publishedAt")]
-    public DateTime? PublishedAt { get; set; }
-}
-
-public class ArticleRelationships
-{
-    [JsonPropertyName("author")]
-    public JsonApiRelationship<JsonApiResourceIdentifier>? Author { get; set; }
-
-    [JsonPropertyName("comments")]
-    public JsonApiCollectionRelationship<List<JsonApiResourceIdentifier>>? Comments { get; set; }
-}
-
-// Deserialize a single resource document
-string json = /* your JSON:API document */;
-var document = JsonApiDocument<Article>.Deserialize(json);
-
-if (document.HasErrors)
-{
-    foreach (var error in document.Errors)
-    {
-        Console.WriteLine($"Error {error.Status}: {error.Title}");
-    }
-}
-else if (document.Data != null)
-{
-    // Data is strongly-typed as Article
-    Console.WriteLine($"Title: {document.Data.Attributes?.Title}");
-    Console.WriteLine($"Published: {document.Data.Attributes?.PublishedAt}");
-
-    // Access typed relationships
-    var authorId = document.Data.Relationships?.Author?.Data?.Id;
-    Console.WriteLine($"Author ID: {authorId}");
-}
-
-// Deserialize a collection document
-var collection = JsonApiCollectionDocument<List<Article>>.Deserialize(json);
-
-if (collection.Data != null)
-{
-    foreach (var article in collection.Data)
-    {
-        Console.WriteLine($"Article: {article.Attributes?.Title}");
-    }
+    // Access attributes dynamically
+    var title = resource?.Attributes?["title"]?.GetValue<string>();
+    Console.WriteLine($"Title: {title}");
 }
 ```
 
@@ -119,11 +104,9 @@ using System.Text.Json.Serialization;
 using Crews.Web.JsonApiClient;
 
 // Define your resource types
-public class User : JsonApiResource<UserAttributes, UserRelationships>
-{
-}
+public class UserResource : JsonApiResource<User, UserRelationships> { }
 
-public class UserAttributes
+public class User
 {
     [JsonPropertyName("name")]
     public string? Name { get; set; }
@@ -170,7 +153,7 @@ string json = """
 }
 """;
 
-var document = JsonApiDocument<User>.Deserialize(json);
+var document = JsonApiDocument<UserResource>.Deserialize(json);
 
 // Access with full type safety and IntelliSense
 if (document.Data != null)
@@ -190,10 +173,43 @@ if (document.Data != null)
 
 ### Working with Resources
 
-#### Weakly-Typed Approach
+#### Strongly-Typed Approach (Recommended)
+
+```csharp
+// Use strongly-typed document with custom resource class
+var document = JsonApiDocument<ArticleResource>.Deserialize(json);
+
+// Access resource identification
+Console.WriteLine($"Type: {document.Data?.Type}");
+Console.WriteLine($"ID: {document.Data?.Id}");
+
+// Access strongly-typed attributes with IntelliSense
+if (document.Data?.Attributes != null)
+{
+    var title = document.Data.Attributes.Title;  // Full IntelliSense!
+    var publishedAt = document.Data.Attributes.PublishedAt;  // Strongly-typed!
+    Console.WriteLine($"{title} published at {publishedAt}");
+}
+
+// Access metadata (flexible JSON object for extension data)
+if (document.Data?.Metadata != null)
+{
+    var copyright = document.Data.Metadata["copyright"]?.GetValue<string>();
+    Console.WriteLine($"Copyright: {copyright}");
+}
+
+// Navigate links
+if (document.Data?.Links?.Self != null)
+{
+    Console.WriteLine($"Self link: {document.Data.Links.Self.Href}");
+}
+```
+
+#### Weakly-Typed Approach (For Dynamic Schemas)
 
 ```csharp
 // Deserialize manually from Data property
+var document = JsonApiDocument.Deserialize(json);
 var resource = document.Data?.Deserialize<JsonApiResource>();
 
 // Access resource identification
@@ -222,67 +238,14 @@ if (resource?.Links?.Self != null)
 }
 ```
 
-#### Strongly-Typed Approach
-
-```csharp
-// Use strongly-typed document
-var document = JsonApiDocument<Article>.Deserialize(json);
-
-// Access resource identification
-Console.WriteLine($"Type: {document.Data?.Type}");
-Console.WriteLine($"ID: {document.Data?.Id}");
-
-// Access strongly-typed attributes with IntelliSense
-if (document.Data?.Attributes != null)
-{
-    var title = document.Data.Attributes.Title;
-    var publishedAt = document.Data.Attributes.PublishedAt;
-    Console.WriteLine($"{title} published at {publishedAt}");
-}
-
-// Access metadata (still flexible JSON object)
-if (document.Data?.Metadata != null)
-{
-    var copyright = document.Data.Metadata["copyright"]?.GetValue<string>();
-    Console.WriteLine($"Copyright: {copyright}");
-}
-
-// Navigate links
-if (document.Data?.Links?.Self != null)
-{
-    Console.WriteLine($"Self link: {document.Data.Links.Self.Href}");
-}
-```
-
 ### Working with Relationships
 
-#### Weakly-Typed Approach
+#### Strongly-Typed Approach (Recommended)
 
 ```csharp
-var resource = document.Data?.Deserialize<JsonApiResource>();
+var document = JsonApiDocument<ArticleResource>.Deserialize(json);
 
-// Access relationships
-if (resource?.Relationships != null &&
-    resource.Relationships.TryGetValue("author", out var authorRel))
-{
-    // Get related resource identifier
-    var authorId = authorRel.Data?.Deserialize<JsonApiResourceIdentifier>();
-    Console.WriteLine($"Author: {authorId?.Type}/{authorId?.Id}");
-
-    // Navigate relationship links
-    if (authorRel.Links?.Related != null)
-    {
-        Console.WriteLine($"Fetch author at: {authorRel.Links.Related.Href}");
-    }
-}
-```
-
-#### Strongly-Typed Approach
-
-```csharp
-var document = JsonApiDocument<Article>.Deserialize(json);
-
-// Access strongly-typed relationships
+// Access strongly-typed relationships with IntelliSense
 var authorRel = document.Data?.Relationships?.Author;
 if (authorRel != null)
 {
@@ -296,7 +259,7 @@ if (authorRel != null)
     }
 }
 
-// Access collection relationships
+// Access collection relationships (strongly-typed)
 var commentsRel = document.Data?.Relationships?.Comments;
 if (commentsRel?.Data != null)
 {
@@ -304,6 +267,28 @@ if (commentsRel?.Data != null)
     foreach (var comment in commentsRel.Data)
     {
         Console.WriteLine($"Comment ID: {comment.Id}");
+    }
+}
+```
+
+#### Weakly-Typed Approach (For Dynamic Schemas)
+
+```csharp
+var document = JsonApiDocument.Deserialize(json);
+var resource = document.Data?.Deserialize<JsonApiResource>();
+
+// Access relationships dynamically
+if (resource?.Relationships != null &&
+    resource.Relationships.TryGetValue("author", out var authorRel))
+{
+    // Get related resource identifier
+    var authorId = authorRel.Data?.Deserialize<JsonApiResourceIdentifier>();
+    Console.WriteLine($"Author: {authorId?.Type}/{authorId?.Id}");
+
+    // Navigate relationship links
+    if (authorRel.Links?.Related != null)
+    {
+        Console.WriteLine($"Fetch author at: {authorRel.Links.Related.Href}");
     }
 }
 ```
@@ -326,10 +311,42 @@ if (document.Included != null)
 
 ### Handling Collections
 
-#### Weakly-Typed Approach
+#### Strongly-Typed Approach (Recommended)
+
+```csharp
+// Use strongly-typed collection document with custom resource class
+var collection = JsonApiCollectionDocument<ArticleResource>.Deserialize(json);
+
+if (collection.Data != null)
+{
+    foreach (var article in collection.Data)
+    {
+        // Access strongly-typed attributes with IntelliSense
+        Console.WriteLine($"Article: {article.Attributes?.Title}");
+        Console.WriteLine($"Published: {article.Attributes?.PublishedAt}");
+
+        // Access relationships
+        var authorId = article.Relationships?.Author?.Data?.Id;
+        Console.WriteLine($"Author ID: {authorId}");
+    }
+}
+
+// Access collection-level links (pagination)
+if (collection.Links?.Next != null)
+{
+    Console.WriteLine($"Next page: {collection.Links.Next.Href}");
+}
+if (collection.Links?.Prev != null)
+{
+    Console.WriteLine($"Previous page: {collection.Links.Prev.Href}");
+}
+```
+
+#### Weakly-Typed Approach (For Dynamic Schemas)
 
 ```csharp
 // Deserialize collection manually
+var document = JsonApiDocument.Deserialize(json);
 var articles = document.Data?.Deserialize<List<JsonApiResource>>();
 
 if (articles != null)
@@ -348,36 +365,57 @@ if (document.Links?.Next != null)
 }
 ```
 
-#### Strongly-Typed Approach
-
-```csharp
-// Use strongly-typed collection document
-var collection = JsonApiCollectionDocument<List<Article>>.Deserialize(json);
-
-if (collection.Data != null)
-{
-    foreach (var article in collection.Data)
-    {
-        // Access strongly-typed attributes
-        Console.WriteLine($"Article: {article.Attributes?.Title}");
-    }
-}
-
-// Access collection-level links
-if (collection.Links?.Next != null)
-{
-    Console.WriteLine($"Next page: {collection.Links.Next.Href}");
-}
-```
-
 ### HTTP Client Integration
+
+The library provides convenient extension methods for `HttpResponseMessage` that integrate seamlessly with `HttpClient`:
 
 ```csharp
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Crews.Web.JsonApiClient;
+
+var client = new HttpClient();
+client.DefaultRequestHeaders.Accept.Add(
+    new MediaTypeWithQualityHeaderValue("application/vnd.api+json")
+);
+
+// Strongly-typed collection - ReadJsonApiCollectionDocumentAsync<T>()
+var response = await client.GetAsync("https://api.example.com/articles");
+var collection = await response.ReadJsonApiCollectionDocumentAsync<ArticleResource>();
+
+if (collection?.Data != null)
+{
+    foreach (var article in collection.Data)
+    {
+        Console.WriteLine($"Article: {article.Attributes?.Title}");
+    }
+}
+
+// Strongly-typed single resource - ReadJsonApiDocumentAsync<T>()
+var singleResponse = await client.GetAsync("https://api.example.com/articles/123");
+var document = await singleResponse.ReadJsonApiDocumentAsync<ArticleResource>();
+
+Console.WriteLine($"Title: {document?.Data?.Attributes?.Title}");
+
+// Weakly-typed - ReadJsonApiDocumentAsync()
+var weakResponse = await client.GetAsync("https://api.example.com/unknown");
+var weakDoc = await weakResponse.ReadJsonApiDocumentAsync();
+
+if (weakDoc?.HasErrors == true)
+{
+    foreach (var error in weakDoc.Errors!)
+    {
+        Console.WriteLine($"Error: {error.Title}");
+    }
+}
+```
+
+#### Using Custom Headers with Extensions and Profiles
+
+```csharp
 using Crews.Web.JsonApiClient.Utility;
 
-// Build JSON:API content type header
+// Build JSON:API content type header with extensions and profiles
 var headerBuilder = new MediaTypeHeaderBuilder()
     .AddExtension(new Uri("https://example.com/ext/atomic"))
     .AddProfile(new Uri("https://example.com/profiles/flexible-pagination"));
@@ -390,14 +428,44 @@ client.DefaultRequestHeaders.Accept.Add(
     new MediaTypeWithQualityHeaderValue(mediaType.MediaType.ToString())
 );
 
-// Make request and deserialize (weakly-typed)
+// Make request and deserialize in one step
 var response = await client.GetAsync("https://api.example.com/articles");
-var json = await response.Content.ReadAsStringAsync();
-var document = JsonApiDocument.Deserialize(json);
+var collection = await response.ReadJsonApiCollectionDocumentAsync<ArticleResource>();
 
-// Or use strongly-typed deserialization
-var typedDocument = JsonApiCollectionDocument<List<Article>>.Deserialize(json);
+// Access strongly-typed data
+if (collection?.Data != null)
+{
+    foreach (var article in collection.Data)
+    {
+        Console.WriteLine($"Article: {article.Attributes?.Title}");
+    }
+}
 ```
+
+#### Extension Methods Available
+
+The library provides three extension methods on `HttpResponseMessage`:
+
+1. **`ReadJsonApiDocumentAsync()`** - Deserializes to a weakly-typed `JsonApiDocument`
+   ```csharp
+   JsonApiDocument? doc = await response.ReadJsonApiDocumentAsync();
+   ```
+
+2. **`ReadJsonApiDocumentAsync<T>()`** - Deserializes to a strongly-typed `JsonApiDocument<T>` with a single resource
+   ```csharp
+   JsonApiDocument<ArticleResource>? doc = await response.ReadJsonApiDocumentAsync<ArticleResource>();
+   ```
+
+3. **`ReadJsonApiCollectionDocumentAsync<T>()`** - Deserializes to a strongly-typed `JsonApiCollectionDocument<T>` with a collection
+   ```csharp
+   JsonApiCollectionDocument<ArticleResource>? collection =
+       await response.ReadJsonApiCollectionDocumentAsync<ArticleResource>();
+   ```
+
+All methods support:
+- Optional `JsonSerializerOptions` for custom serialization behavior
+- `CancellationToken` for cancellation support
+- Automatic error document handling (errors deserialize naturally into `Errors` property)
 
 ### Error Handling
 
@@ -479,120 +547,20 @@ var json = JsonSerializer.Serialize(newDocument, new JsonSerializerOptions
 });
 ```
 
-## When to Use Which Approach
-
-### Use Strongly-Typed (Generic Subclasses) When:
-
-- You have a **known, stable schema** for your JSON:API resources
-- You want **compile-time type safety** and catch errors early
-- You need **IntelliSense/autocomplete** support in your IDE
-- You're building a **client for a specific API** with well-defined resource types
-- You want **refactoring support** (rename properties, find usages, etc.)
-
-### Use Weakly-Typed (Base Classes) When:
-
-- You're working with **dynamic or unknown schemas**
-- The API schema **changes frequently** or varies by endpoint
-- You're building **generic tooling** that works with any JSON:API endpoint
-- You need **maximum flexibility** to handle diverse response structures
-- You're **exploring an API** and don't want to define types upfront
-
-### Mixing Both Approaches
-
-You can mix both approaches in the same application:
-
-```csharp
-// Use strongly-typed for known resources
-var articles = JsonApiCollectionDocument<List<Article>>.Deserialize(articlesJson);
-
-// Use weakly-typed for dynamic/unknown resources
-var unknownDoc = JsonApiDocument.Deserialize(dynamicJson);
-var resource = unknownDoc.Data?.Deserialize<JsonApiResource>();
-```
-
 ## Features
 
-- **Dual typing approach** - Choose between weakly-typed (flexible, schema-agnostic) or strongly-typed (compile-time safety, IntelliSense) deserialization
+- **Strongly-typed deserialization** - Define custom `JsonApiResource<T>` classes and get compile-time safety, IntelliSense, and refactoring support
+- **HttpClient integration** - Extension methods for `HttpResponseMessage` (`ReadJsonApiDocumentAsync()`, `ReadJsonApiDocumentAsync<T>()`, `ReadJsonApiCollectionDocumentAsync<T>()`)
+- **Simple static methods** - Use `JsonApiDocument<T>.Deserialize()` and `JsonApiCollectionDocument<T>.Deserialize()` for easy JSON parsing
 - **Generic subclasses** for strongly-typed resources, relationships, and documents with full type safety
-- **Static deserialization methods** on all document classes for convenient JSON parsing
+- **Dual typing approach** - Fall back to weakly-typed base classes for dynamic schemas when needed
 - **Strongly-typed models** for all JSON:API specification elements
-- **Flexible attribute storage** using `JsonObject` for dynamic schemas (or strongly-typed for known schemas)
+- **Flexible attribute storage** using `JsonObject` for dynamic schemas or strongly-typed classes for known schemas
 - **Dual-format link support** (string URLs or rich link objects)
 - **Extension support** via `[JsonExtensionData]` for custom JSON:API extensions
-- **Helper methods** for safe document type checking (`HasErrors`, `HasSingleResource`, `HasCollectionResource`)
+- **Helper methods** for safe document type checking (`HasErrors`, `HasCollectionResource`)
 - **HTTP header utilities** for building spec-compliant Content-Type headers with extensions and profiles
 - **.NET 8.0 target** with nullable reference types enabled
-- **Backward compatible** - existing code continues to work with base classes
-
-## Migration Guide (v2.0.0 → v3.0.0)
-
-Version 3.0.0 removes the `GetResource()` and `GetResourceCollection()` methods in favor of strongly-typed generic subclasses and manual deserialization. Here's how to migrate:
-
-### Before (v2.0.0)
-
-```csharp
-var document = JsonSerializer.Deserialize<JsonApiDocument>(json);
-
-// Get single resource
-var resource = document.GetResource();
-var title = resource?.Attributes?["title"]?.GetValue<string>();
-
-// Get collection
-var resources = document.GetResourceCollection();
-foreach (var resource in resources)
-{
-    // Process resource
-}
-```
-
-### After (v3.0.0) - Option 1: Weakly-Typed
-
-```csharp
-var document = JsonApiDocument.Deserialize(json);
-
-// Get single resource
-var resource = document.Data?.Deserialize<JsonApiResource>();
-var title = resource?.Attributes?["title"]?.GetValue<string>();
-
-// Get collection
-var resources = document.Data?.Deserialize<List<JsonApiResource>>();
-if (resources != null)
-{
-    foreach (var resource in resources)
-    {
-        // Process resource
-    }
-}
-```
-
-### After (v3.0.0) - Option 2: Strongly-Typed (Recommended)
-
-```csharp
-// Define your types once
-public class Article : JsonApiResource<ArticleAttributes>
-{
-}
-
-public class ArticleAttributes
-{
-    [JsonPropertyName("title")]
-    public string? Title { get; set; }
-}
-
-// Use strongly-typed deserialization
-var document = JsonApiDocument<Article>.Deserialize(json);
-var title = document.Data?.Attributes?.Title; // Full IntelliSense support!
-
-// Or for collections
-var collection = JsonApiCollectionDocument<List<Article>>.Deserialize(json);
-if (collection.Data != null)
-{
-    foreach (var article in collection.Data)
-    {
-        Console.WriteLine(article.Attributes?.Title);
-    }
-}
-```
 
 ## Documentation
 

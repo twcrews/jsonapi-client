@@ -35,7 +35,7 @@ dotnet test --filter "FullyQualifiedName~Crews.Web.JsonApiClient.Tests.Converter
 
 ### Run a Single Test Method
 ```bash
-dotnet test --filter "FullyQualifiedName~Crews.Web.JsonApiClient.Tests.JsonApiDocumentTests.HasSingleResourceReturnsTrueForObject"
+dotnet test --filter "FullyQualifiedName~Crews.Web.JsonApiClient.Tests.JsonApiDocumentTests.HasCollectionResourceReturnsTrueForArray"
 ```
 
 ## Architecture Overview
@@ -54,9 +54,9 @@ JsonApiDocument (base class)
 ├── JsonApi (JsonApiInfo?)
 └── Extensions (Dictionary<string, JsonElement>?)
     ├── JsonApiDocument<T> - strongly-typed single resource document
-    │   └── Data (T?) where T : JsonApiResource
+    │   └── Data (JsonApiResource<T>?) - resource with attributes type T
     └── JsonApiCollectionDocument<T> - strongly-typed collection document
-        └── Data (T?) where T : IEnumerable<JsonApiResource>
+        └── Data (IEnumerable<JsonApiResource<T>>?) - collection of resources with attributes type T
 
 JsonApiResource (extends JsonApiResourceIdentifier)
 ├── Type/Id/LocalId (identification)
@@ -98,7 +98,7 @@ JsonApiLink
    - `JsonApiDocument<T>` / `JsonApiCollectionDocument<T>` - strongly-typed document data
    - `JsonApiResource<T>` / `JsonApiResource<TAttributes, TRelationships>` - strongly-typed resource attributes and relationships
    - `JsonApiRelationship<T>` / `JsonApiCollectionRelationship<T>` - strongly-typed relationship data
-   - `HasSingleResource` / `HasCollectionResource` / `HasErrors` - check document type
+   - `HasCollectionResource` / `HasErrors` - check document type
    - Static `Deserialize()` methods on all document types for easy JSON deserialization
 
 2. **Dual-Format Serialization**: `JsonApiLinkConverter` handles JSON:API links, which can be either:
@@ -120,7 +120,7 @@ JsonApiLink
 Raw JSON:API Response
     ↓ (JsonApiDocument.Deserialize() or JsonSerializer.Deserialize<JsonApiDocument>())
 JsonApiDocument instance (Data as JsonElement)
-    ↓ (check HasErrors, HasSingleResource, HasCollectionResource)
+    ↓ (check HasErrors, HasCollectionResource)
     ↓ (manually deserialize Data property)
 JsonApiResource object(s)
     ├── Access Attributes (JsonObject for flexible schema)
@@ -132,12 +132,12 @@ JsonApiResource object(s)
 **Strongly-Typed Approach (compile-time safety):**
 ```
 Raw JSON:API Response
-    ↓ (JsonApiDocument<MyResource>.Deserialize() or JsonSerializer.Deserialize<JsonApiDocument<MyResource>>())
-JsonApiDocument<MyResource> instance (Data as MyResource)
+    ↓ (JsonApiDocument.Deserialize<MyAttributes>() or JsonSerializer.Deserialize<JsonApiDocument<MyAttributes>>())
+JsonApiDocument<MyAttributes> instance (Data as JsonApiResource<MyAttributes>)
     ↓ (check HasErrors)
-MyResource object (extends JsonApiResource<MyAttributes, MyRelationships>)
+JsonApiResource<MyAttributes> object
     ├── Access Attributes (MyAttributes with typed properties)
-    ├── Follow Relationships (MyRelationships with typed JsonApiRelationship<T> properties)
+    ├── Follow Relationships (Dictionary<string, JsonApiRelationship>)
     ├── Navigate via Links (hypermedia via JsonApiLink)
     └── Read Metadata (JsonObject)
 ```
@@ -162,7 +162,7 @@ MyResource object (extends JsonApiResource<MyAttributes, MyRelationships>)
 - Tests target .NET 10.0 (while library targets .NET 8.0 for compatibility)
 - Comprehensive test coverage for `JsonApiDocument` including:
   - All property deserialization and serialization
-  - Helper methods (`HasSingleResource`, `HasCollectionResource`, `HasErrors`)
+  - Helper methods (`HasCollectionResource`, `HasErrors`)
   - Static `Deserialize()` methods on document classes
   - Generic subclass deserialization for strongly-typed scenarios
   - Roundtrip serialization tests
@@ -182,18 +182,18 @@ Crews.Web.JsonApiClient/                    # Main library (.NET 8.0)
 ├── JsonApiErrorSource.cs                   # Source pointer for errors
 ├── JsonApiErrorLinksObject.cs              # Links specific to error objects
 ├── JsonApiInfo.cs                          # jsonapi member (version, meta)
-├── Constants.cs                            # Media types, parameters, exception messages
 ├── Converters/
 │   └── JsonApiLinkConverter.cs             # Custom converter for link string/object duality
 └── Utility/
+    ├── Constants.cs                        # Media types, parameters, exception messages
     └── MediaTypeHeaderBuilder.cs           # Fluent builder for JSON:API Accept/Content-Type headers
 
 Crews.Web.JsonApiClient.Tests/              # Test project (.NET 10.0)
-├── JsonApiDocumentTests.cs                 # Comprehensive tests for JsonApiDocument (31 tests)
+├── JsonApiDocumentTests.cs                 # Comprehensive tests for JsonApiDocument (24 tests)
 ├── Converters/
-│   └── JsonApiLinkConverterTests.cs        # Tests for link converter
+│   └── JsonApiLinkConverterTests.cs        # Tests for link converter (16 tests)
 ├── Utility/
-│   └── MediaTypeHeaderBuilderTests.cs      # Tests for header builder
+│   └── MediaTypeHeaderBuilderTests.cs      # Tests for header builder (9 tests)
 ├── GlobalSuppressions.cs                   # Code analysis suppressions
 └── .runsettings                            # Test execution configuration (LCOV coverage)
 ```
@@ -211,16 +211,15 @@ Crews.Web.JsonApiClient.Tests/              # Test project (.NET 10.0)
 
 ## Current Test Coverage
 
-The library has comprehensive test coverage across all major components:
+The library has comprehensive test coverage across all major components (49 total tests):
 
-- **JsonApiDocumentTests.cs**: 31 tests covering all aspects of the document model
-  - HasSingleResource, HasCollectionResource, HasErrors property tests
+- **JsonApiDocumentTests.cs**: 24 tests covering all aspects of the document model
+  - HasCollectionResource, HasErrors property tests
   - Static Deserialize() method tests
   - Property deserialization (JsonApi, Links, Included, Metadata, Errors, Extensions)
   - Serialization and roundtrip tests for all document types
-  - **Note**: Tests for generic subclasses (`JsonApiDocument<T>`, `JsonApiCollectionDocument<T>`, `JsonApiResource<T>`, `JsonApiRelationship<T>`) may need to be added
-- **JsonApiLinkConverterTests.cs**: Tests for dual-format link serialization
-- **MediaTypeHeaderBuilderTests.cs**: Tests for fluent header construction with extensions and profiles
+- **JsonApiLinkConverterTests.cs**: 16 tests for dual-format link serialization
+- **MediaTypeHeaderBuilderTests.cs**: 9 tests for fluent header construction with extensions and profiles
 
 ## Changes in `dev` Branch (vs. `master`)
 
@@ -229,14 +228,14 @@ The `dev` branch introduces **generic subclasses** that enable strongly-typed de
 ### New Generic Classes
 
 1. **JsonApiDocument<T>** - Strongly-typed single resource document
-   - `Data` property is typed as `T?` where `T : JsonApiResource`
-   - Includes static `Deserialize()` method for easy JSON parsing
-   - Example: `JsonApiDocument<UserResource>.Deserialize(json)`
+   - `Data` property is typed as `JsonApiResource<T>?` where `T` is the attributes type
+   - Includes static `Deserialize<T>()` method on base class for easy JSON parsing
+   - Example: `JsonApiDocument.Deserialize<UserAttributes>(json)` returns `JsonApiDocument<UserAttributes>`
 
 2. **JsonApiCollectionDocument<T>** - Strongly-typed collection document
-   - `Data` property is typed as `T?` where `T : IEnumerable<JsonApiResource>`
-   - Includes static `Deserialize()` method
-   - Example: `JsonApiCollectionDocument<List<UserResource>>.Deserialize(json)`
+   - `Data` property is typed as `IEnumerable<JsonApiResource<T>>?` where `T` is the attributes type
+   - Includes static `DeserializeCollection<T>()` method on base class
+   - Example: `JsonApiDocument.DeserializeCollection<UserAttributes>(json)` returns `JsonApiCollectionDocument<UserAttributes>`
 
 3. **JsonApiResource<T>** - Resource with strongly-typed attributes
    - `Attributes` property is typed as `T?` instead of `JsonObject?`
@@ -262,9 +261,9 @@ The `dev` branch introduces **generic subclasses** that enable strongly-typed de
 - `GetResourceCollection()` - Previously used to deserialize `Data` as a resource collection
 
 **Added Methods**:
-- `JsonApiDocument.Deserialize(string json, JsonSerializerOptions? options = null)` - Static deserialization
-- `JsonApiDocument<T>.Deserialize(string json, JsonSerializerOptions? options = null)` - Strongly-typed static deserialization
-- `JsonApiCollectionDocument<T>.Deserialize(string json, JsonSerializerOptions? options = null)` - Strongly-typed static deserialization
+- `JsonApiDocument.Deserialize(string json, JsonSerializerOptions? options = null)` - Static deserialization (weakly-typed)
+- `JsonApiDocument.Deserialize<T>(string json, JsonSerializerOptions? options = null) where T : JsonApiResource` - Strongly-typed static deserialization
+- `JsonApiDocument.DeserializeCollection<T>(string json, JsonSerializerOptions? options = null)` - Strongly-typed collection deserialization
 
 ### Migration Guide (master → dev)
 
@@ -277,7 +276,7 @@ var userName = resource?.Attributes?["userName"]?.GetString();
 
 **After (dev branch - strongly-typed option):**
 ```csharp
-var doc = JsonApiDocument<UserResource>.Deserialize(json);
+var doc = JsonApiDocument.Deserialize<UserAttributes>(json);
 var userName = doc.Data?.Attributes?.UserName;
 ```
 

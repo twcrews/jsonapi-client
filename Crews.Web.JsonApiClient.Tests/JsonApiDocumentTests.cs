@@ -446,7 +446,7 @@ public class JsonApiDocumentTests
 	public void DeserializeGenericStaticMethodReturnsNullForNullJson()
     {
 		const string invalidJson = """null""";
-		JsonApiDocument<JsonApiResource>? doc = JsonApiDocument.Deserialize<JsonApiResource>(invalidJson, _options);
+		JsonApiDocument<JsonApiResource>? doc = JsonApiDocument<JsonApiResource>.Deserialize(invalidJson, _options);
 		Assert.Null(doc);
     }
 
@@ -454,7 +454,7 @@ public class JsonApiDocumentTests
 	public void DeserializeGenericStaticMethodReturnsValidDocumentForValidJson()
     {
 		const string validJson = """{"data": {"type": "articles", "id": "1"}}""";
-		JsonApiDocument<JsonApiResource>? doc = JsonApiDocument.Deserialize<JsonApiResource>(validJson, _options);
+		JsonApiDocument<JsonApiResource>? doc = JsonApiDocument<JsonApiResource>.Deserialize(validJson, _options);
 		Assert.NotNull(doc);
 		Assert.False(doc.HasCollectionResource);
     }
@@ -463,7 +463,7 @@ public class JsonApiDocumentTests
 	public void DeserializeCollectionGenericStaticMethodReturnsNullForNullJson()
     {
 		const string invalidJson = """null""";
-		JsonApiCollectionDocument<IEnumerable<JsonApiResource>>? doc = JsonApiDocument.DeserializeCollection<IEnumerable<JsonApiResource>>(invalidJson, _options);
+		JsonApiCollectionDocument<JsonApiResource>? doc = JsonApiCollectionDocument<JsonApiResource>.Deserialize(invalidJson, _options);
 		Assert.Null(doc);
     }
 
@@ -471,10 +471,20 @@ public class JsonApiDocumentTests
 	public void DeserializeCollectionGenericStaticMethodReturnsValidDocumentForValidJson()
     {
 		const string validJson = """{"data": [{"type": "articles", "id": "1"}, {"type": "articles", "id": "2"}]}""";
-		JsonApiCollectionDocument<IEnumerable<JsonApiResource>>? doc = JsonApiDocument.DeserializeCollection<IEnumerable<JsonApiResource>>(validJson, _options);
+		JsonApiCollectionDocument<JsonApiResource>? doc = JsonApiCollectionDocument<JsonApiResource>.Deserialize(validJson, _options);
 		Assert.NotNull(doc);
 		Assert.True(doc.HasCollectionResource);
     }
+
+	public class MyModel
+	{
+		public string? Name { get; set; }
+		public int Age { get; set; }
+	}
+
+	public class MyModelResource : JsonApiResource<MyModel> { }
+
+	public class MyModelDocument : JsonApiDocument<MyModelResource> { }
 
     #endregion
 }
