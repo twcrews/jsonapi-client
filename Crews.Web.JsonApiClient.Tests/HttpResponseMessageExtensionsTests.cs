@@ -186,7 +186,6 @@ public class HttpResponseMessageExtensionsTests
 		Assert.NotNull(doc.JsonApi);
 		Assert.Equal("1.1", doc.JsonApi.Version);
 		Assert.NotNull(doc.Links);
-		Assert.NotNull(doc.Links.Self);
 		Assert.NotNull(doc.Metadata);
 		Assert.Equal("2024", doc.Metadata["copyright"]!.GetValue<string>());
 	}

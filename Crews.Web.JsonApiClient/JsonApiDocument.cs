@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -32,7 +32,7 @@ public class JsonApiDocument
     /// </summary>
     /// <seealso href="https://jsonapi.org/format/#document-links"/>
     [JsonPropertyName("links")]
-    public JsonApiLinksObject? Links { get; set; }
+    public Dictionary<string, JsonApiLink>? Links { get; set; }
 
     /// <summary>
     /// Gets or sets the <c>included</c> property of the document.

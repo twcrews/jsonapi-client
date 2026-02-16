@@ -1,4 +1,4 @@
-﻿using Crews.Web.JsonApiClient.Converters;
+using Crews.Web.JsonApiClient.Converters;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -7,6 +7,7 @@ namespace Crews.Web.JsonApiClient;
 /// <summary>
 /// Represents a hypermedia link with associated metadata, as defined in section 7.6.1 of the JSON:API specification.
 /// </summary>
+[JsonConverter(typeof(JsonApiLinkConverter))]
 public class JsonApiLink
 {
     /// <summary>

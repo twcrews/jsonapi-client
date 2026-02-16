@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace Crews.Web.JsonApiClient;
@@ -24,7 +24,7 @@ public class JsonApiResource : JsonApiResourceIdentifier
     /// Gets or sets the <c>links</c> property of the resource object.
     /// </summary>
     [JsonPropertyName("links")]
-    public JsonApiLinksObject? Links { get; set; }
+    public Dictionary<string, JsonApiLink>? Links { get; set; }
 
     /// <summary>
     /// Gets or sets the custom metadata associated with this object.

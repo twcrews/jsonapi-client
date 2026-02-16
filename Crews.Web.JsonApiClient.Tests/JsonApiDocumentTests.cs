@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Crews.Web.JsonApiClient.Tests;
@@ -142,8 +142,7 @@ public class JsonApiDocumentTests
 
 		Assert.NotNull(doc);
 		Assert.NotNull(doc.Links);
-		Assert.NotNull(doc.Links.Self);
-		Assert.Equal("https://example.com/articles", doc.Links.Self.Href.OriginalString);
+		Assert.Equal("https://example.com/articles", doc.Links.First().Value.Href.OriginalString);
 	}
 
 	[Fact(DisplayName = "Deserializes document with Included property")]
@@ -307,7 +306,7 @@ public class JsonApiDocumentTests
 		{
 			JsonApi = new JsonApiInfo { Version = "1.1" },
 			Data = JsonSerializer.SerializeToElement(new JsonApiResource { Type = "articles", Id = "1" }),
-			Links = new JsonApiLinksObject { Self = new JsonApiLink { Href = new("https://example.com/articles") } },
+			Links = new() { { "self", new JsonApiLink { Href = new("https://example.com/articles") } } },
 			Included =
 			[
 				new JsonApiResource { Type = "people", Id = "9" }
