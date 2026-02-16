@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-02-16
+
+### Changed
+
+- **Breaking change:** All `Links` property types are now `Dictionary<string, JsonApiLink>`.
+- **Breaking change:** All property names now match their names in the JSON:API specification, with the exception of remaining pascal-cased.
+  - All `Metadata` properties have been renamed to `Meta`.
+  - `JsonApiError.StatusCode` has been renamed to `Status`.
+  - `JsonApiError.ErrorCode` has been renamed to `Code`.
+  - `JsonApiError.Details` has been renamed to `Detail`.
+  - `JsonApiInfo.Extensions` has been renamed to `Ext`.
+  - `JsonApiInfo.Profiles` has been renamed to `Profile`.
+  - `JsonApiLink.HrefLanguage` has been renamed to `HrefLang`.
+  - `JsonApiResourceIdentifier.LocalId` has been renamed to `LId`.
+
+### Removed
+
+- **Breaking change:** `JsonApiLinksObject` has been removed.
+
+### Remarks
+
+This version primarily fixes a critical deviation from the JSON:API specification in which `links` objects inside `relationships` objects were incorrectly typed as arrays, leading to deserialization exceptions. In the process of fixing this bug, the entire `JsonApiLinksObject` was removed, as it was foreign to the JSON:API specification for links.
+
+Additionally, this version aims to be more idiomatic by renaming class properties to match their serialized representations.
+
 ## [3.0.0] - 2026-02-09
 
 ### Added
@@ -42,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
+[4.0.0]: https://github.com/twcrews/jsonapi-client/compare/3.0.0...4.0.0
 [3.0.0]: https://github.com/twcrews/jsonapi-client/compare/2.0.0...3.0.0
 [2.0.0]: https://github.com/twcrews/jsonapi-client/compare/1.0.0...2.0.0
 [1.0.0]: https://github.com/twcrews/jsonapi-client/releases/tag/1.0.0

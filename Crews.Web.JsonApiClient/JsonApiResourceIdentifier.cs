@@ -18,7 +18,7 @@ public class JsonApiResourceIdentifier
     /// Gets or sets the local identifier associated with the object.
     /// </summary>
     [JsonPropertyName("lid")]
-    public string? LocalId { get; set; }
+    public string? LId { get; set; }
 
     /// <summary>
     /// Gets or sets the type identifier for the object represented by this instance.

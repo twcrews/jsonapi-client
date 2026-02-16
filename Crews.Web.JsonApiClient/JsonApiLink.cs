@@ -7,6 +7,7 @@ namespace Crews.Web.JsonApiClient;
 /// <summary>
 /// Represents a hypermedia link with associated metadata, as defined in section 7.6.1 of the JSON:API specification.
 /// </summary>
+[JsonConverter(typeof(JsonApiLinkConverter))]
 public class JsonApiLink
 {
     /// <summary>
@@ -44,13 +45,13 @@ public class JsonApiLink
     /// Gets or sets the language of the linked resource, as defined by the hreflang attribute in HTML or XML sitemaps.
     /// </summary>
     [JsonPropertyName("hreflang")]
-    public string? HrefLanguage { get; set; }
+    public string? HrefLang { get; set; }
 
     /// <summary>
     /// Gets or sets metadata about the link.
     /// </summary>
     [JsonPropertyName("meta")]
-    public JsonObject? Metadata { get; set; }
+    public JsonObject? Meta { get; set; }
 
     /// <summary>
     /// Implicitly converts a string URL to a JsonApiLink instance.

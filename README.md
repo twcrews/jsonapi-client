@@ -192,16 +192,16 @@ if (document.Data?.Attributes != null)
 }
 
 // Access metadata (flexible JSON object for extension data)
-if (document.Data?.Metadata != null)
+if (document.Data?.Meta != null)
 {
-    var copyright = document.Data.Metadata["copyright"]?.GetValue<string>();
+    var copyright = document.Data.Meta["copyright"]?.GetValue<string>();
     Console.WriteLine($"Copyright: {copyright}");
 }
 
 // Navigate links
-if (document.Data?.Links?.Self != null)
+if (document.Data?.Links?["self"] != null)
 {
-    Console.WriteLine($"Self link: {document.Data.Links.Self.Href}");
+    Console.WriteLine($"Self link: {document.Data.Links["self"].Href}");
 }
 ```
 
@@ -225,16 +225,16 @@ if (resource?.Attributes != null)
 }
 
 // Access metadata
-if (resource?.Metadata != null)
+if (resource?.Meta != null)
 {
-    var copyright = resource.Metadata["copyright"]?.GetValue<string>();
+    var copyright = resource.Meta["copyright"]?.GetValue<string>();
     Console.WriteLine($"Copyright: {copyright}");
 }
 
 // Navigate links
-if (resource?.Links?.Self != null)
+if (resource?.Links?["self"] != null)
 {
-    Console.WriteLine($"Self link: {resource.Links.Self.Href}");
+    Console.WriteLine($"Self link: {resource.Links["self"].Href}");
 }
 ```
 
@@ -255,7 +255,7 @@ if (authorRel != null)
     // Navigate relationship links
     if (authorRel.Links?.Related != null)
     {
-        Console.WriteLine($"Fetch author at: {authorRel.Links.Related.Href}");
+        Console.WriteLine($"Fetch author at: {authorRel.Links["related"].Href}");
     }
 }
 
@@ -286,9 +286,9 @@ if (resource?.Relationships != null &&
     Console.WriteLine($"Author: {authorId?.Type}/{authorId?.Id}");
 
     // Navigate relationship links
-    if (authorRel.Links?.Related != null)
+    if (authorRel.Links["related"] != null)
     {
-        Console.WriteLine($"Fetch author at: {authorRel.Links.Related.Href}");
+        Console.WriteLine($"Fetch author at: {authorRel.Links["related"].Href}");
     }
 }
 ```
@@ -332,13 +332,13 @@ if (collection.Data != null)
 }
 
 // Access collection-level links (pagination)
-if (collection.Links?.Next != null)
+if (collection.Links["next"] != null)
 {
-    Console.WriteLine($"Next page: {collection.Links.Next.Href}");
+    Console.WriteLine($"Next page: {collection.Links["next"].Href}");
 }
-if (collection.Links?.Prev != null)
+if (collection.Links?["prev"] != null)
 {
-    Console.WriteLine($"Previous page: {collection.Links.Prev.Href}");
+    Console.WriteLine($"Previous page: {collection.Links["prev"].Href}");
 }
 ```
 
@@ -359,9 +359,9 @@ if (articles != null)
 }
 
 // Access collection-level links
-if (document.Links?.Next != null)
+if (document.Links?["next"] != null)
 {
-    Console.WriteLine($"Next page: {document.Links.Next.Href}");
+    Console.WriteLine($"Next page: {document.Links["next"].Href}");
 }
 ```
 
@@ -486,9 +486,9 @@ if (document.HasErrors)
         }
 
         // Error-specific links
-        if (error.Links?.About != null)
+        if (error.Links?["about"] != null)
         {
-            Console.WriteLine($"More info: {error.Links.About.Href}");
+            Console.WriteLine($"More info: {error.Links["about"].Href}");
         }
     }
 }
@@ -498,7 +498,7 @@ if (document.HasErrors)
 
 ```csharp
 // Links can be simple strings or rich objects
-var selfLink = resource.Links?.Self;
+var selfLink = resource.Links?["self"];
 
 if (selfLink != null)
 {
@@ -561,11 +561,3 @@ var json = JsonSerializer.Serialize(newDocument, new JsonSerializerOptions
 - **Helper methods** for safe document type checking (`HasErrors`, `HasCollectionResource`)
 - **HTTP header utilities** for building spec-compliant Content-Type headers with extensions and profiles
 - **.NET 8.0 target** with nullable reference types enabled
-
-## Documentation
-
-For more information about JSON:API, visit [jsonapi.org](https://jsonapi.org/).
-
-## License
-
-See [LICENSE](LICENSE) file for details.

@@ -122,8 +122,8 @@ public class JsonApiDocumentTests
 		Assert.NotNull(doc);
 		Assert.NotNull(doc.JsonApi);
 		Assert.Equal("1.1", doc.JsonApi.Version);
-		Assert.NotNull(doc.JsonApi.Metadata);
-		Assert.Equal("my-server", doc.JsonApi.Metadata["server"]!.GetValue<string>());
+		Assert.NotNull(doc.JsonApi.Meta);
+		Assert.Equal("my-server", doc.JsonApi.Meta["server"]!.GetValue<string>());
 	}
 
 	[Fact(DisplayName = "Deserializes document with Links property")]
@@ -142,8 +142,7 @@ public class JsonApiDocumentTests
 
 		Assert.NotNull(doc);
 		Assert.NotNull(doc.Links);
-		Assert.NotNull(doc.Links.Self);
-		Assert.Equal("https://example.com/articles", doc.Links.Self.Href.OriginalString);
+		Assert.Equal("https://example.com/articles", doc.Links.First().Value.Href.OriginalString);
 	}
 
 	[Fact(DisplayName = "Deserializes document with Included property")]
@@ -187,9 +186,9 @@ public class JsonApiDocumentTests
 		TestJsonApiDocument? doc = JsonSerializer.Deserialize<TestJsonApiDocument>(json, _options);
 
 		Assert.NotNull(doc);
-		Assert.NotNull(doc.Metadata);
-		Assert.Equal("Copyright 2024 Example Corp.", doc.Metadata["copyright"]!.GetValue<string>());
-		JsonArray? authors = doc.Metadata["authors"]!.AsArray();
+		Assert.NotNull(doc.Meta);
+		Assert.Equal("Copyright 2024 Example Corp.", doc.Meta["copyright"]!.GetValue<string>());
+		JsonArray? authors = doc.Meta["authors"]!.AsArray();
 		Assert.NotNull(authors);
 		Assert.Equal(2, authors.Count);
 		Assert.Equal("John Doe", authors[0]!.GetValue<string>());
@@ -217,9 +216,9 @@ public class JsonApiDocumentTests
 		Assert.NotNull(doc.Errors);
 		JsonApiError[] errors = doc.Errors.ToArray();
 		Assert.Single(errors);
-		Assert.Equal("403", errors[0].StatusCode);
+		Assert.Equal("403", errors[0].Status);
 		Assert.Equal("Forbidden", errors[0].Title);
-		Assert.Equal("You do not have permission to access this resource.", errors[0].Details);
+		Assert.Equal("You do not have permission to access this resource.", errors[0].Detail);
 	}
 
 	[Fact(DisplayName = "Deserializes document with Extensions property")]
@@ -307,12 +306,12 @@ public class JsonApiDocumentTests
 		{
 			JsonApi = new JsonApiInfo { Version = "1.1" },
 			Data = JsonSerializer.SerializeToElement(new JsonApiResource { Type = "articles", Id = "1" }),
-			Links = new JsonApiLinksObject { Self = new JsonApiLink { Href = new("https://example.com/articles") } },
+			Links = new() { { "self", new JsonApiLink { Href = new("https://example.com/articles") } } },
 			Included =
 			[
 				new JsonApiResource { Type = "people", Id = "9" }
 			],
-			Metadata = new JsonObject { ["copyright"] = "2024" }
+			Meta = new JsonObject { ["copyright"] = "2024" }
 		};
 
 		string json = JsonSerializer.Serialize(doc, _options);
@@ -416,9 +415,9 @@ public class JsonApiDocumentTests
 		Assert.True(deserialized.HasErrors);
 		Assert.NotNull(deserialized.Errors);
 		JsonApiError error = deserialized.Errors.First();
-		Assert.Equal("422", error.StatusCode);
+		Assert.Equal("422", error.Status);
 		Assert.Equal("Validation Error", error.Title);
-		Assert.Equal("Name is required", error.Details);
+		Assert.Equal("Name is required", error.Detail);
 	}
 
     #endregion

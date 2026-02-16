@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
@@ -67,7 +66,7 @@ public class HttpResponseMessageExtensionsTests
 		Assert.NotNull(doc);
 		Assert.True(doc.HasErrors);
 		JsonApiError error = doc.Errors!.First();
-		Assert.Equal("404", error.StatusCode);
+		Assert.Equal("404", error.Status);
 		Assert.Equal("Not Found", error.Title);
 	}
 
@@ -186,8 +185,7 @@ public class HttpResponseMessageExtensionsTests
 		Assert.NotNull(doc.JsonApi);
 		Assert.Equal("1.1", doc.JsonApi.Version);
 		Assert.NotNull(doc.Links);
-		Assert.NotNull(doc.Links.Self);
-		Assert.NotNull(doc.Metadata);
-		Assert.Equal("2024", doc.Metadata["copyright"]!.GetValue<string>());
+		Assert.NotNull(doc.Meta);
+		Assert.Equal("2024", doc.Meta["copyright"]!.GetValue<string>());
 	}
 }

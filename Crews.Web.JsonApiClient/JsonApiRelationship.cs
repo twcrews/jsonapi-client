@@ -13,7 +13,7 @@ public class JsonApiRelationship
     /// Gets or sets the <c>links</c> property of the relationship object.
     /// </summary>
     [JsonPropertyName("links")]
-    public IEnumerable<JsonApiLink>? Links { get; set; }
+    public Dictionary<string, JsonApiLink>? Links { get; set; }
 
     /// <summary>
     /// Gets or sets the data payload associated with the response or request.
@@ -25,7 +25,7 @@ public class JsonApiRelationship
     /// Gets or sets additional metadata associated with the object.
     /// </summary>
     [JsonPropertyName("meta")]
-    public JsonObject? Metadata { get; set; }
+    public JsonObject? Meta { get; set; }
 
     /// <summary>
     /// Gets or sets members defined by any applied JSON:API extensions.

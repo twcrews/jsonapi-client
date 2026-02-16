@@ -53,10 +53,10 @@ internal class JsonApiLinkConverter : JsonConverter<JsonApiLink>
                             link.Type = reader.GetString();
                             break;
                         case "hreflang":
-                            link.HrefLanguage = reader.GetString();
+                            link.HrefLang = reader.GetString();
                             break;
                         case "meta":
-                            link.Metadata = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
+                            link.Meta = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
                             break;
                         default:
                             // Skip unknown properties
@@ -84,8 +84,8 @@ internal class JsonApiLinkConverter : JsonConverter<JsonApiLink>
             value.DescribedBy is null &&
             string.IsNullOrEmpty(value.Title) &&
             string.IsNullOrEmpty(value.Type) &&
-            string.IsNullOrEmpty(value.HrefLanguage) &&
-            value.Metadata is null)
+            string.IsNullOrEmpty(value.HrefLang) &&
+            value.Meta is null)
         {
             writer.WriteStringValue(value.Href.OriginalString);
             return;
@@ -112,13 +112,13 @@ internal class JsonApiLinkConverter : JsonConverter<JsonApiLink>
         if (!string.IsNullOrEmpty(value.Type))
             writer.WriteString("type", value.Type);
 
-        if (!string.IsNullOrEmpty(value.HrefLanguage))
-            writer.WriteString("hreflang", value.HrefLanguage);
+        if (!string.IsNullOrEmpty(value.HrefLang))
+            writer.WriteString("hreflang", value.HrefLang);
 
-        if (value.Metadata is not null)
+        if (value.Meta is not null)
         {
             writer.WritePropertyName("meta");
-            JsonSerializer.Serialize(writer, value.Metadata, options);
+            JsonSerializer.Serialize(writer, value.Meta, options);
         }
 
         writer.WriteEndObject();
