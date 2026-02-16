@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -13,7 +13,7 @@ public class JsonApiRelationship
     /// Gets or sets the <c>links</c> property of the relationship object.
     /// </summary>
     [JsonPropertyName("links")]
-    public IEnumerable<JsonApiLink>? Links { get; set; }
+    public Dictionary<string, JsonApiLink>? Links { get; set; }
 
     /// <summary>
     /// Gets or sets the data payload associated with the response or request.
