@@ -1,4 +1,4 @@
-using Crews.Web.JsonApiClient.Converters;
+﻿using Crews.Web.JsonApiClient.Converters;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -45,13 +45,13 @@ public class JsonApiLink
     /// Gets or sets the language of the linked resource, as defined by the hreflang attribute in HTML or XML sitemaps.
     /// </summary>
     [JsonPropertyName("hreflang")]
-    public string? HrefLanguage { get; set; }
+    public string? HrefLang { get; set; }
 
     /// <summary>
     /// Gets or sets metadata about the link.
     /// </summary>
     [JsonPropertyName("meta")]
-    public JsonObject? Metadata { get; set; }
+    public JsonObject? Meta { get; set; }
 
     /// <summary>
     /// Implicitly converts a string URL to a JsonApiLink instance.

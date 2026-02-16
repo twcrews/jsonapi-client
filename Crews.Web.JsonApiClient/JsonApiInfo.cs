@@ -18,17 +18,17 @@ public class JsonApiInfo
     /// Gets or sets the collection of extension URIs associated with the document.
     /// </summary>
     [JsonPropertyName("ext")]
-    public IEnumerable<Uri>? Extensions { get; set; }
+    public IEnumerable<Uri>? Ext { get; set; }
 
     /// <summary>
     /// Gets or sets the collection of profile URIs associated with the document.
     /// </summary>
     [JsonPropertyName("profile")]
-    public IEnumerable<Uri>? Profiles { get; set; }
+    public IEnumerable<Uri>? Profile { get; set; }
 
     /// <summary>
     /// Gets or sets the collection of additional metadata associated with the object.
     /// </summary>
     [JsonPropertyName("meta")]
-    public JsonObject? Metadata { get; set; }
+    public JsonObject? Meta { get; set; }
 }

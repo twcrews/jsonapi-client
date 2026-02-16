@@ -24,13 +24,13 @@ public class JsonApiError
     /// Gets or sets the HTTP status code associated with the error.
     /// </summary>
     [JsonPropertyName("status")]
-    public string? StatusCode { get; set; }
+    public string? Status { get; set; }
 
     /// <summary>
     /// Gets or sets the application-specific error code associated with the error.
     /// </summary>
     [JsonPropertyName("code")]
-    public string? ErrorCode { get; set; }
+    public string? Code { get; set; }
 
     /// <summary>
     /// Gets or sets the title of the error.
@@ -42,7 +42,7 @@ public class JsonApiError
     /// Gets or sets the detailed description of the error.
     /// </summary>
     [JsonPropertyName("detail")]
-    public string? Details { get; set; }
+    public string? Detail { get; set; }
 
     /// <summary>
     /// Gets or sets the source of the error.
@@ -54,5 +54,5 @@ public class JsonApiError
     /// Gets or sets the additional metadata associated with the object.
     /// </summary>
     [JsonPropertyName("meta")]
-    public JsonObject? Metadata { get; set; }
+    public JsonObject? Meta { get; set; }
 }

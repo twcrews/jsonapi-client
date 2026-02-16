@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -25,7 +25,7 @@ public class JsonApiRelationship
     /// Gets or sets additional metadata associated with the object.
     /// </summary>
     [JsonPropertyName("meta")]
-    public JsonObject? Metadata { get; set; }
+    public JsonObject? Meta { get; set; }
 
     /// <summary>
     /// Gets or sets members defined by any applied JSON:API extensions.

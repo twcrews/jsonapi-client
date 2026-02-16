@@ -26,8 +26,8 @@ public class JsonApiLinkConverterTests
         Assert.Null(result.Rel);
         Assert.Null(result.Title);
         Assert.Null(result.Type);
-        Assert.Null(result.HrefLanguage);
-        Assert.Null(result.Metadata);
+        Assert.Null(result.HrefLang);
+        Assert.Null(result.Meta);
         Assert.Null(result.DescribedBy);
     }
 
@@ -43,8 +43,8 @@ public class JsonApiLinkConverterTests
         Assert.Null(result.Rel);
         Assert.Null(result.Title);
         Assert.Null(result.Type);
-        Assert.Null(result.HrefLanguage);
-        Assert.Null(result.Metadata);
+        Assert.Null(result.HrefLang);
+        Assert.Null(result.Meta);
         Assert.Null(result.DescribedBy);
     }
 
@@ -69,9 +69,9 @@ public class JsonApiLinkConverterTests
         Assert.Equal("self", result.Rel);
         Assert.Equal("Article Title", result.Title);
         Assert.Equal("text/html", result.Type);
-        Assert.Equal("en-US", result.HrefLanguage);
-        Assert.NotNull(result.Metadata);
-        Assert.Equal(10, result.Metadata["count"]!.GetValue<int>());
+        Assert.Equal("en-US", result.HrefLang);
+        Assert.NotNull(result.Meta);
+        Assert.Equal(10, result.Meta["count"]!.GetValue<int>());
         Assert.Null(result.DescribedBy);
     }
 
@@ -177,7 +177,7 @@ public class JsonApiLinkConverterTests
         JsonApiLink link = new()
         {
             Href = new("https://example.com/articles"),
-            HrefLanguage = "en-US"
+            HrefLang = "en-US"
         };
 
         string result = JsonSerializer.Serialize(link, _options);
@@ -194,7 +194,7 @@ public class JsonApiLinkConverterTests
         JsonApiLink link = new()
         {
             Href = new("https://example.com/articles"),
-            Metadata = metadata
+            Meta = metadata
         };
 
         string result = JsonSerializer.Serialize(link, _options);
@@ -241,8 +241,8 @@ public class JsonApiLinkConverterTests
             Rel = "self",
             Title = "Article Title",
             Type = "text/html",
-            HrefLanguage = "en-US",
-            Metadata = metadata,
+            HrefLang = "en-US",
+            Meta = metadata,
             DescribedBy = describedBy
         };
 
@@ -273,8 +273,8 @@ public class JsonApiLinkConverterTests
         Assert.Equal(original.Rel, deserialized.Rel);
         Assert.Equal(original.Title, deserialized.Title);
         Assert.Equal(original.Type, deserialized.Type);
-        Assert.Equal(original.HrefLanguage, deserialized.HrefLanguage);
-        Assert.Equal(original.Metadata, deserialized.Metadata);
+        Assert.Equal(original.HrefLang, deserialized.HrefLang);
+        Assert.Equal(original.Meta, deserialized.Meta);
         Assert.Equal(original.DescribedBy, deserialized.DescribedBy);
     }
 
@@ -288,8 +288,8 @@ public class JsonApiLinkConverterTests
             Rel = "self",
             Title = "Article Collection",
             Type = "application/json",
-            HrefLanguage = "en-US",
-            Metadata = metadata
+            HrefLang = "en-US",
+            Meta = metadata
         };
 
         string json = JsonSerializer.Serialize(original, _options);
@@ -300,9 +300,9 @@ public class JsonApiLinkConverterTests
         Assert.Equal(original.Rel, deserialized.Rel);
         Assert.Equal(original.Title, deserialized.Title);
         Assert.Equal(original.Type, deserialized.Type);
-        Assert.Equal(original.HrefLanguage, deserialized.HrefLanguage);
-        Assert.NotNull(deserialized.Metadata);
-        Assert.Equal(42, deserialized.Metadata["count"]!.GetValue<int>());
-        Assert.Equal("article", deserialized.Metadata["type"]!.GetValue<string>());
+        Assert.Equal(original.HrefLang, deserialized.HrefLang);
+        Assert.NotNull(deserialized.Meta);
+        Assert.Equal(42, deserialized.Meta["count"]!.GetValue<int>());
+        Assert.Equal("article", deserialized.Meta["type"]!.GetValue<string>());
     }
 }
