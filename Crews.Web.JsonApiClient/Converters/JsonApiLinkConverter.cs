@@ -22,12 +22,32 @@ internal class JsonApiLinkConverter : JsonConverter<JsonApiLink>
         // Case 2: Link is an object with properties
         if (reader.TokenType == JsonTokenType.StartObject)
         {
-            JsonApiLink link = new() { Href = new(string.Empty, UriKind.Relative) };
+            Uri? href = null;
+            string? rel = null;
+            JsonApiLink? describedBy = null;
+            string? title = null;
+            string? type = null;
+            string? hrefLang = null;
+            JsonObject? meta = null;
 
             while (reader.Read())
             {
                 if (reader.TokenType == JsonTokenType.EndObject)
-                    return link;
+                {
+                    if (href is null)
+                        throw new JsonException("Href is required for link objects.");
+
+                    return new JsonApiLink
+                    {
+                        Href = href,
+                        Rel = rel,
+                        DescribedBy = describedBy,
+                        Title = title,
+                        Type = type,
+                        HrefLang = hrefLang,
+                        Meta = meta
+                    };
+                }
 
                 if (reader.TokenType == JsonTokenType.PropertyName)
                 {
@@ -37,26 +57,26 @@ internal class JsonApiLinkConverter : JsonConverter<JsonApiLink>
                     switch (propertyName)
                     {
                         case "href":
-                            string href = reader.GetString() ?? throw new JsonException("Href cannot be null.");
-                            link.Href = new(href);
+                            string hrefString = reader.GetString() ?? throw new JsonException("Href cannot be null.");
+                            href = new(hrefString);
                             break;
                         case "rel":
-                            link.Rel = reader.GetString();
+                            rel = reader.GetString();
                             break;
                         case "describedby":
-                            link.DescribedBy = JsonSerializer.Deserialize<JsonApiLink>(ref reader, options);
+                            describedBy = JsonSerializer.Deserialize<JsonApiLink>(ref reader, options);
                             break;
                         case "title":
-                            link.Title = reader.GetString();
+                            title = reader.GetString();
                             break;
                         case "type":
-                            link.Type = reader.GetString();
+                            type = reader.GetString();
                             break;
                         case "hreflang":
-                            link.HrefLang = reader.GetString();
+                            hrefLang = reader.GetString();
                             break;
                         case "meta":
-                            link.Meta = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
+                            meta = JsonSerializer.Deserialize<JsonObject>(ref reader, options);
                             break;
                         default:
                             // Skip unknown properties

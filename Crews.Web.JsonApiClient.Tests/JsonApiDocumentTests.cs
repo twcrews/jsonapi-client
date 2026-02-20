@@ -13,7 +13,7 @@ public class JsonApiDocumentTests
 	}
 
 	// Concrete implementation for testing abstract JsonApiDocument
-	private class TestJsonApiDocument : JsonApiDocument { }
+	private record TestJsonApiDocument : JsonApiDocument { }
 
 	#region HasCollectionResource Tests
 
@@ -475,15 +475,15 @@ public class JsonApiDocumentTests
 		Assert.True(doc.HasCollectionResource);
     }
 
-	public class MyModel
+	public record MyModel
 	{
-		public string? Name { get; set; }
-		public int Age { get; set; }
+		public string? Name { get; init; }
+		public int Age { get; init; }
 	}
 
-	public class MyModelResource : JsonApiResource<MyModel> { }
+	public record MyModelResource : JsonApiResource<MyModel> { }
 
-	public class MyModelDocument : JsonApiDocument<MyModelResource> { }
+	public record MyModelDocument : JsonApiDocument<MyModelResource> { }
 
     #endregion
 }

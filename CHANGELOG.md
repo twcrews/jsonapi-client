@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0] - 2026-02-20
+
+### Changed
+
+- **Breaking change:** All model types have been changed from `class`es to `record`s.
+- **Breaking change:** All property accessors on model types have changed from `{ get; set; }` to `{ get; init; }`.
+
+### Removed
+
+- **Breaking change:** `JsonApiLinksObject` has been removed.
+
+### Remarks
+
+This version refactors the entire model into immutable `record` types. While opinionated, I'm convinced this change is in the best interest of creating robust and resilient code.
+
+If you're not willing to part with mutable `class`es, this version is otherwise identical to version 4.0.0.
+
 ## [4.0.0] - 2026-02-16
 
 ### Changed
@@ -67,6 +84,7 @@ Additionally, this version aims to be more idiomatic by renaming class propertie
 
 Initial release.
 
+[5.0.0]: https://github.com/twcrews/jsonapi-client/compare/4.0.0...5.0.0
 [4.0.0]: https://github.com/twcrews/jsonapi-client/compare/3.0.0...4.0.0
 [3.0.0]: https://github.com/twcrews/jsonapi-client/compare/2.0.0...3.0.0
 [2.0.0]: https://github.com/twcrews/jsonapi-client/compare/1.0.0...2.0.0

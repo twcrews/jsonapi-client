@@ -16,9 +16,9 @@ dotnet add package Crews.Web.JsonApiClient
 // Step 1: Define your base model
 public class Article
 {
-    public string? Title { get; set; }
-    public string? Body { get; set; }
-    public DateTime? PublishedAt { get; set; }
+    public string? Title { get; init; }
+    public string? Body { get; init; }
+    public DateTime? PublishedAt { get; init; }
 }
 
 // Step 2: Define a strongly-typed resource class extending JsonApiResource<T>
@@ -109,22 +109,22 @@ public class UserResource : JsonApiResource<User, UserRelationships> { }
 public class User
 {
     [JsonPropertyName("name")]
-    public string? Name { get; set; }
+    public string? Name { get; init; }
 
     [JsonPropertyName("email")]
-    public string? Email { get; set; }
+    public string? Email { get; init; }
 
     [JsonPropertyName("createdAt")]
-    public DateTime? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; init; }
 }
 
 public class UserRelationships
 {
     [JsonPropertyName("posts")]
-    public JsonApiCollectionRelationship<List<JsonApiResourceIdentifier>>? Posts { get; set; }
+    public JsonApiCollectionRelationship<List<JsonApiResourceIdentifier>>? Posts { get; init; }
 
     [JsonPropertyName("profile")]
-    public JsonApiRelationship<JsonApiResourceIdentifier>? Profile { get; set; }
+    public JsonApiRelationship<JsonApiResourceIdentifier>? Profile { get; init; }
 }
 
 // Use the types
