@@ -7,51 +7,51 @@ namespace Crews.Web.JsonApiClient;
 /// <summary>
 /// Represents a base class for JSON:API top-level objects as defined in section 7.1 of the JSON:API specification.
 /// </summary>
-public class JsonApiDocument
+public record JsonApiDocument
 {
     /// <summary>
     /// Gets or sets the <c>jsonapi</c> property of the document.
     /// </summary>
     [JsonPropertyName("jsonapi")]
-    public JsonApiInfo? JsonApi { get; set; }
+    public JsonApiInfo? JsonApi { get; init; }
 
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
     [JsonPropertyName("data")]
-    public JsonElement? Data { get; set; }
+    public JsonElement? Data { get; init; }
 
     /// <summary>
     /// Gets or sets the collection of errors associated with the document.
     /// </summary>
     [JsonPropertyName("errors")]
-    public IEnumerable<JsonApiError>? Errors { get; set; }
+    public IEnumerable<JsonApiError>? Errors { get; init; }
 
     /// <summary>
     /// Gets or sets the <c>links</c> property of the document.
     /// </summary>
     /// <seealso href="https://jsonapi.org/format/#document-links"/>
     [JsonPropertyName("links")]
-    public Dictionary<string, JsonApiLink>? Links { get; set; }
+    public Dictionary<string, JsonApiLink>? Links { get; init; }
 
     /// <summary>
     /// Gets or sets the <c>included</c> property of the document.
     /// </summary>
     [JsonPropertyName("included")]
-    public IEnumerable<JsonApiResource>? Included { get; set; }
+    public IEnumerable<JsonApiResource>? Included { get; init; }
 
     /// <summary>
     /// Gets or sets the <c>meta</c> property of the document.
     /// </summary>
     /// <seealso href="https://jsonapi.org/format/#document-meta"/>
     [JsonPropertyName("meta")]
-    public JsonObject? Meta { get; set; }
+    public JsonObject? Meta { get; init; }
 
     /// <summary>
     /// Gets or sets members defined by any applied JSON:API extensions.
     /// </summary>
     [JsonExtensionData]
-    public Dictionary<string, JsonElement>? Extensions { get; set; }
+    public Dictionary<string, JsonElement>? Extensions { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
@@ -87,13 +87,13 @@ public class JsonApiDocument
 /// JSON:API specification.
 /// </summary>
 /// <typeparam name="T">The underlying resource type.</typeparam>
-public class JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
+public record JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
 {
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
     [JsonPropertyName("data")]
-    public new T? Data { get; set; }
+    public new T? Data { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
@@ -120,13 +120,13 @@ public class JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
 /// JSON:API specification.
 /// </summary>
 /// <typeparam name="T">The underlying resource type.</typeparam>
-public class JsonApiCollectionDocument<T> : JsonApiDocument where T : JsonApiResource
+public record JsonApiCollectionDocument<T> : JsonApiDocument where T : JsonApiResource
 {
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
     [JsonPropertyName("data")]
-    public new IEnumerable<T>? Data { get; set; }
+    public new IEnumerable<T>? Data { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
