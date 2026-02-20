@@ -533,3 +533,6 @@ obj/
 /wwwroot/node_modules
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp,dotnetcore,aspnetcore
+
+# Claude Code local settings
+.claude/settings.local.json
