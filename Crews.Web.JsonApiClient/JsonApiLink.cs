@@ -13,8 +13,13 @@ public record JsonApiLink
     /// <summary>
     /// Gets or sets the URL of the link.
     /// </summary>
+    /// <remarks>
+    /// This property is required by the JSON:API specification and must be present during deserialization.
+    /// When constructing instances manually, ensure this property is initialized to avoid null reference exceptions.
+    /// </remarks>
+    [JsonRequired]
     [JsonPropertyName("href")]
-    public required Uri Href { get; init; }
+    public Uri Href { get; init; } = null!;
 
     /// <summary>
     /// Gets or sets the relation type for the link.

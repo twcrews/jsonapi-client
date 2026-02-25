@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.0] - 2026-02-25
+
+### Changed
+
+Replace `required` property constraints with `[JsonRequired]` attributes in the following members:
+
+- `JsonApiLink.Href`
+- `JsonApiResourceIdentifier.Type`
+
+### Remarks
+
+The JSON:API specification requires that certain properties have values within a document. This library enforced these constraints by using the C# `required` keyword, making the properties null-safe at compile time.
+
+A side effect of this design decision was added friction for library consumers:
+
+- Code using `where T : new()` can't satisfy the required constraint via `new T()` ([CS9040](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/property-declaration-errors#required-members)).
+- Converters or factory patterns must explicitly set `Type`, even if the value is populated immediately after.
+- Every derived class inherits the `required` obligation.
+
+In order to add flexibility to the library (albeit at the expense of compile-time `null` safety), the `required` keywords are being removed. Instead, the `[JsonRequired]` attribute is being applied to these same properties, enforcing the JSON:API spec requirement during deserialization. These properties are now initialized with the value `null!`, following the pattern established by libraries such as Entity Framework.
+
 ## [5.1.0] - 2026-02-25
 
 ### Added
@@ -97,6 +118,7 @@ Additionally, this version aims to be more idiomatic by renaming class propertie
 
 Initial release.
 
+[5.2.0]: https://github.com/twcrews/jsonapi-client/compare/5.1.0...5.2.0
 [5.1.0]: https://github.com/twcrews/jsonapi-client/compare/5.0.0...5.1.0
 [5.0.0]: https://github.com/twcrews/jsonapi-client/compare/4.0.0...5.0.0
 [4.0.0]: https://github.com/twcrews/jsonapi-client/compare/3.0.0...4.0.0

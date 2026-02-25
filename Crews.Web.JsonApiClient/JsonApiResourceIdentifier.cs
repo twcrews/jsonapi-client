@@ -23,6 +23,11 @@ public record JsonApiResourceIdentifier
     /// <summary>
     /// Gets or sets the type identifier for the object represented by this instance.
     /// </summary>
+    /// <remarks>
+    /// This property is required by the JSON:API specification and must be present during deserialization.
+    /// When constructing instances manually, ensure this property is initialized to avoid null reference exceptions.
+    /// </remarks>
+    [JsonRequired]
     [JsonPropertyName("type")]
-    public required string Type { get; init; }
+    public string Type { get; init; } = null!;
 }
