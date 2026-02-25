@@ -12,6 +12,7 @@ public record JsonApiDocument
     /// <summary>
     /// Gets or sets the <c>jsonapi</c> property of the document.
     /// </summary>
+    /// <seealso href="https://jsonapi.org/format/#document-jsonapi-object"/>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("jsonapi")]
     public JsonApiInfo? JsonApi { get; init; }
@@ -19,6 +20,7 @@ public record JsonApiDocument
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
+    /// <seealso href="https://jsonapi.org/format/#document-jsonapi-object"/>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("data")]
     public JsonElement? Data { get; init; }
@@ -26,6 +28,7 @@ public record JsonApiDocument
     /// <summary>
     /// Gets or sets the collection of errors associated with the document.
     /// </summary>
+    /// <seealso href="https://jsonapi.org/format/#error-objects"/>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("errors")]
     public IEnumerable<JsonApiError>? Errors { get; init; }
@@ -41,6 +44,7 @@ public record JsonApiDocument
     /// <summary>
     /// Gets or sets the <c>included</c> property of the document.
     /// </summary>
+    /// <seealso href="https://jsonapi.org/format/#document-compound-documents"/>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("included")]
     public IEnumerable<JsonApiResource>? Included { get; init; }
@@ -100,6 +104,7 @@ public record JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
+    /// <seealso href="https://jsonapi.org/format/#document-jsonapi-object"/>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("data")]
     public new T? Data { get; init; }
@@ -135,6 +140,7 @@ public record JsonApiCollectionDocument<T> : JsonApiDocument where T : JsonApiRe
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
+    /// <seealso href="https://jsonapi.org/format/#document-jsonapi-object"/>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("data")]
     public new IEnumerable<T>? Data { get; init; }
