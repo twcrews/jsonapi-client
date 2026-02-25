@@ -324,6 +324,25 @@ public class JsonApiDocumentTests
 		Assert.Equal("2024", result.RootElement.GetProperty("meta").GetProperty("copyright").GetString());
 	}
 
+	[Fact(DisplayName = "Serialization excludes null properties")]
+	public void SerializationExcludesNullProperties()
+	{
+		TestJsonApiDocument doc = new()
+		{
+			Data = JsonSerializer.SerializeToElement(new JsonApiResource { Type = "articles", Id = "1" })
+		};
+
+		string json = JsonSerializer.Serialize(doc, _options);
+		JsonDocument result = JsonDocument.Parse(json);
+
+		Assert.True(result.RootElement.TryGetProperty("data", out _));
+		Assert.False(result.RootElement.TryGetProperty("jsonapi", out _));
+		Assert.False(result.RootElement.TryGetProperty("errors", out _));
+		Assert.False(result.RootElement.TryGetProperty("links", out _));
+		Assert.False(result.RootElement.TryGetProperty("included", out _));
+		Assert.False(result.RootElement.TryGetProperty("meta", out _));
+	}
+
 	#endregion
 
 	#region Roundtrip Tests
