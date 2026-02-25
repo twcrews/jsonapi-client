@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.0] - 2026-02-25
+
+### Added
+
+- Add extension method overloads for `HttpResponseMessage` extensions.
+  - Add overload for `ReadJsonApiDocumentAsync` which does not accept a `JsonSerializerOptions` parameter.
+  - Add overload for `ReadJsonApiDocumentAsync<T>` which does not accept a `JsonSerializerOptions` parameter.
+  - Add overload for `ReadJsonApiCollectionDocumentAsync<T>` which does not accept a `JsonSerializerOptions` parameter.
+
+### Remarks
+
+This version just adds extension methods that mirror `ReadFromJsonAsync<T>(HttpContent, CancellationToken)`, not requiring the `JsonSerializerOptions` parameter. Basically a syntactic shortcut for QOL.
+
 ## [5.0.0] - 2026-02-20
 
 ### Changed
@@ -84,6 +97,7 @@ Additionally, this version aims to be more idiomatic by renaming class propertie
 
 Initial release.
 
+[5.1.0]: https://github.com/twcrews/jsonapi-client/compare/5.0.0...5.1.0
 [5.0.0]: https://github.com/twcrews/jsonapi-client/compare/4.0.0...5.0.0
 [4.0.0]: https://github.com/twcrews/jsonapi-client/compare/3.0.0...4.0.0
 [3.0.0]: https://github.com/twcrews/jsonapi-client/compare/2.0.0...3.0.0
