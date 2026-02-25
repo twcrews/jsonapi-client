@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.2] - 2026-02-25
+
+### Fixed
+
+Add missing `[JsonIgnore]` attributes to properties in `JsonApiDocument` which are not part of the JSON:API specification.
+
+### Remarks
+
+This change addresses an oversight in previous versions of the library in which utility properties belonging to `JsonApiDocument` were being (de)serialized.
+
 ## [5.2.1] - 2026-02-25
 
 ### Fixed
@@ -135,6 +145,7 @@ Additionally, this version aims to be more idiomatic by renaming class propertie
 
 Initial release.
 
+[5.2.2]: https://github.com/twcrews/jsonapi-client/compare/5.2.1...5.2.2
 [5.2.1]: https://github.com/twcrews/jsonapi-client/compare/5.2.0...5.2.1
 [5.2.0]: https://github.com/twcrews/jsonapi-client/compare/5.1.0...5.2.0
 [5.1.0]: https://github.com/twcrews/jsonapi-client/compare/5.0.0...5.1.0
