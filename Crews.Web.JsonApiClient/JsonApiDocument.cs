@@ -60,11 +60,13 @@ public record JsonApiDocument
     /// This property returns <see langword="true"/> if <see cref="Data"/> is a JSON array. No other validation or
     /// type checking is performed.
     /// </remarks>
+    [JsonIgnore]
     public bool HasCollectionResource => Data?.ValueKind == JsonValueKind.Array;
 
     /// <summary>
     /// Gets a value indicating whether the <see cref="Errors"/> property contains one or more objects.
     /// </summary>
+    [JsonIgnore]
     public bool HasErrors => Errors is not null && Errors.Any();
 
     /// <summary>
@@ -98,6 +100,7 @@ public record JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
     /// <summary>
     /// Gets a value indicating whether the <see cref="Data"/> property contains a single resource object.
     /// </summary>
+    [JsonIgnore]
     public new bool HasCollectionResource => false;
 
     /// <summary>
@@ -131,6 +134,7 @@ public record JsonApiCollectionDocument<T> : JsonApiDocument where T : JsonApiRe
     /// <summary>
     /// Gets a value indicating whether the <see cref="Data"/> property contains a resource collection object.
     /// </summary>
+    [JsonIgnore]
     public new bool HasCollectionResource => true;
 
     /// <summary>
