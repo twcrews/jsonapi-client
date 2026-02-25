@@ -12,18 +12,21 @@ public record JsonApiDocument
     /// <summary>
     /// Gets or sets the <c>jsonapi</c> property of the document.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("jsonapi")]
     public JsonApiInfo? JsonApi { get; init; }
 
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("data")]
     public JsonElement? Data { get; init; }
 
     /// <summary>
     /// Gets or sets the collection of errors associated with the document.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("errors")]
     public IEnumerable<JsonApiError>? Errors { get; init; }
 
@@ -31,12 +34,14 @@ public record JsonApiDocument
     /// Gets or sets the <c>links</c> property of the document.
     /// </summary>
     /// <seealso href="https://jsonapi.org/format/#document-links"/>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("links")]
     public Dictionary<string, JsonApiLink>? Links { get; init; }
 
     /// <summary>
     /// Gets or sets the <c>included</c> property of the document.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("included")]
     public IEnumerable<JsonApiResource>? Included { get; init; }
 
@@ -44,6 +49,7 @@ public record JsonApiDocument
     /// Gets or sets the <c>meta</c> property of the document.
     /// </summary>
     /// <seealso href="https://jsonapi.org/format/#document-meta"/>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("meta")]
     public JsonObject? Meta { get; init; }
 
@@ -94,6 +100,7 @@ public record JsonApiDocument<T> : JsonApiDocument where T : JsonApiResource
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("data")]
     public new T? Data { get; init; }
 
@@ -128,6 +135,7 @@ public record JsonApiCollectionDocument<T> : JsonApiDocument where T : JsonApiRe
     /// <summary>
     /// Gets or sets the primary data payload associated with the document.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("data")]
     public new IEnumerable<T>? Data { get; init; }
 

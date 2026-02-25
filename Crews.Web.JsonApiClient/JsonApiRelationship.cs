@@ -12,18 +12,21 @@ public record JsonApiRelationship
     /// <summary>
     /// Gets or sets the <c>links</c> property of the relationship object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("links")]
     public Dictionary<string, JsonApiLink>? Links { get; init; }
 
     /// <summary>
     /// Gets or sets the data payload associated with the response or request.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("data")]
     public JsonElement? Data { get; init; }
 
     /// <summary>
     /// Gets or sets additional metadata associated with the object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("meta")]
     public JsonObject? Meta { get; init; }
 
@@ -44,6 +47,7 @@ public record JsonApiRelationship<T> : JsonApiRelationship where T : JsonApiReso
     /// <summary>
     /// Gets or sets the data payload associated with the response or request.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("data")]
     public new T? Data { get; init; }
 }
@@ -60,6 +64,7 @@ public record JsonApiCollectionRelationship<T> : JsonApiRelationship where T : I
     /// <summary>
     /// Gets or sets the data payload associated with the response or request.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("data")]
     public new T? Data { get; init; }
 }

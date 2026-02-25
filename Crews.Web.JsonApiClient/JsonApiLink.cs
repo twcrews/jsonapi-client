@@ -24,12 +24,14 @@ public record JsonApiLink
     /// <summary>
     /// Gets or sets the relation type for the link.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("rel")]
     public string? Rel { get; init; }
 
     /// <summary>
     /// Gets or sets a link to a resource that provides additional descriptive information about the current object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("describedby")]
     [JsonConverter(typeof(JsonApiLinkConverter))]
     public JsonApiLink? DescribedBy { get; init; }
@@ -37,24 +39,28 @@ public record JsonApiLink
     /// <summary>
     /// Gets or sets the title associated with the object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("title")]
     public string? Title { get; init; }
 
     /// <summary>
     /// Gets or sets the type of the object represented by this instance.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("type")]
     public string? Type { get; init; }
 
     /// <summary>
     /// Gets or sets the language of the linked resource, as defined by the hreflang attribute in HTML or XML sitemaps.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("hreflang")]
     public string? HrefLang { get; init; }
 
     /// <summary>
     /// Gets or sets metadata about the link.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("meta")]
     public JsonObject? Meta { get; init; }
 

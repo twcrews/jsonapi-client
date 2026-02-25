@@ -11,12 +11,14 @@ public record JsonApiResourceIdentifier
     /// <summary>
     /// Gets or sets the unique identifier for the object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("id")]
     public string? Id { get; init; }
 
     /// <summary>
     /// Gets or sets the local identifier associated with the object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("lid")]
     public string? LId { get; init; }
 
