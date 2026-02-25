@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.1] - 2026-02-25
+
+### Fixed
+
+Add missing `[JsonPropertyName]` attributes to properties in the following derived classes:
+
+- `JsonApiResource<T>.Attributes`
+- `JsonApiRelationship<T>.Data`
+- `JsonApiCollectionRelationship<T>.Data`
+
+### Remarks
+
+This change addresses an oversight in previous versions of the library in which some derived generic class properties were missing the `JsonPropertyName` attribute. This introduced errors in the deserialization and serialization processes:
+
+- Deserialized documents would set the property values for the base class, losing the advantage of the generic type property.
+- Serialized documents would produce a second property without the overriding `JsonPropertyName`, falling back to the active `JsonSerializerOptions` instance (if any).
+
 ## [5.2.0] - 2026-02-25
 
 ### Changed
@@ -118,6 +135,7 @@ Additionally, this version aims to be more idiomatic by renaming class propertie
 
 Initial release.
 
+[5.2.1]: https://github.com/twcrews/jsonapi-client/compare/5.2.0...5.2.1
 [5.2.0]: https://github.com/twcrews/jsonapi-client/compare/5.1.0...5.2.0
 [5.1.0]: https://github.com/twcrews/jsonapi-client/compare/5.0.0...5.1.0
 [5.0.0]: https://github.com/twcrews/jsonapi-client/compare/4.0.0...5.0.0
