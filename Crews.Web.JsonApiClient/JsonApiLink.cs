@@ -61,6 +61,6 @@ public record JsonApiLink
     /// <summary>
     /// Implicitly converts a string URL to a JsonApiLink instance.
     /// </summary>
-    /// <param name="href"></param>
+    /// <param name="href">The URL string.</param>
     public static implicit operator JsonApiLink(string href) => new() { Href = new(href) };
 }
