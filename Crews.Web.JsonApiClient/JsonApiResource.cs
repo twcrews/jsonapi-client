@@ -11,24 +11,28 @@ public record JsonApiResource : JsonApiResourceIdentifier
     /// <summary>
     /// Gets or sets the collection of custom attributes associated with this object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("attributes")]
     public JsonObject? Attributes { get; init; }
 
     /// <summary>
     /// Gets or sets the collection of relationships associated with this object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("relationships")]
     public Dictionary<string, JsonApiRelationship>? Relationships { get; init; }
 
     /// <summary>
     /// Gets or sets the <c>links</c> property of the resource object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("links")]
     public Dictionary<string, JsonApiLink>? Links { get; init; }
 
     /// <summary>
     /// Gets or sets the custom metadata associated with this object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("meta")]
     public JsonObject? Meta { get; init; }
 }
@@ -43,6 +47,7 @@ public record JsonApiResource<T> : JsonApiResource
     /// <summary>
     /// Gets or sets the collection of custom attributes associated with this object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("attributes")]
     public new T? Attributes { get; init; }
 }
@@ -57,6 +62,7 @@ public record JsonApiResource<TAttributes, TRelationships> : JsonApiResource<TAt
     /// <summary>
     /// Gets or sets the collection of relationships associated with this object.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("relationships")]
     public new TRelationships? Relationships { get; init; }
 }

@@ -12,6 +12,7 @@ public record JsonApiErrorLinksObject
     /// <summary>
     /// Gets or sets a link that provides additional information about the error.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("about")]
     [JsonConverter(typeof(JsonApiLinkConverter))]
     public JsonApiLink? About { get; init; }
@@ -19,6 +20,7 @@ public record JsonApiErrorLinksObject
     /// <summary>
     /// Gets or sets the link that specifies the type of the error.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("type")]
     [JsonConverter(typeof(JsonApiLinkConverter))]
     public JsonApiLink? Type { get; init; }
