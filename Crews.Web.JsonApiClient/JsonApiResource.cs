@@ -43,6 +43,7 @@ public record JsonApiResource<T> : JsonApiResource
     /// <summary>
     /// Gets or sets the collection of custom attributes associated with this object.
     /// </summary>
+    [JsonPropertyName("attributes")]
     public new T? Attributes { get; init; }
 }
 

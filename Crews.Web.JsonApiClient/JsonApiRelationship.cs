@@ -44,6 +44,7 @@ public record JsonApiRelationship<T> : JsonApiRelationship where T : JsonApiReso
     /// <summary>
     /// Gets or sets the data payload associated with the response or request.
     /// </summary>
+    [JsonPropertyName("data")]
     public new T? Data { get; init; }
 }
 
@@ -59,5 +60,6 @@ public record JsonApiCollectionRelationship<T> : JsonApiRelationship where T : I
     /// <summary>
     /// Gets or sets the data payload associated with the response or request.
     /// </summary>
+    [JsonPropertyName("data")]
     public new T? Data { get; init; }
 }
