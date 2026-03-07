@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-Change the type argument constraint for `JsonApiCollectionRelationship<T>` to match that of `JsonApiRelationship<T>` for consistency with `JsonApiDocument` generics.
+**Breaking change:** Change the type argument constraint for `JsonApiCollectionRelationship<T>` to match that of `JsonApiRelationship<T>` for consistency with `JsonApiDocument` generics.
 
 ## [5.2.3] - 2026-02-25
 
