@@ -121,10 +121,10 @@ public class User
 public class UserRelationships
 {
     [JsonPropertyName("posts")]
-    public JsonApiCollectionRelationship<List<JsonApiResourceIdentifier>>? Posts { get; init; }
+    public JsonApiCollectionRelationship<JsonApiResource<Post>>? Posts { get; init; }
 
     [JsonPropertyName("profile")]
-    public JsonApiRelationship<JsonApiResourceIdentifier>? Profile { get; init; }
+    public JsonApiRelationship<JsonApiResource<Profile>>? Profile { get; init; }
 }
 
 // Use the types

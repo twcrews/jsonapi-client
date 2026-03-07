@@ -59,12 +59,12 @@ public record JsonApiRelationship<T> : JsonApiRelationship where T : JsonApiReso
 /// <typeparam name="T">
 /// The type of the resource identifier collection object in the <see cref="Data"/> property.
 /// </typeparam>
-public record JsonApiCollectionRelationship<T> : JsonApiRelationship where T : IEnumerable<JsonApiResourceIdentifier>
+public record JsonApiCollectionRelationship<T> : JsonApiRelationship where T : JsonApiResourceIdentifier
 {
     /// <summary>
     /// Gets or sets the data payload associated with the response or request.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("data")]
-    public new T? Data { get; init; }
+    public new IEnumerable<T>? Data { get; init; }
 }
