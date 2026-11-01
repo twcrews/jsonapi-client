@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.0.0] - 2026-11-01
+
+### Changed
+
+**Breaking change:** Change the target framework from .NET 8 to .NET 10. Consumers must target .NET 10 or later.
+
+**Breaking change:** Replace the `Microsoft.Net.Http.Headers` package dependency with the built-in `System.Net.Http.Headers` namespace. The `MediaTypeHeaderBuilder` constructor now accepts, and `MediaTypeHeaderBuilder.Build()` now returns, `System.Net.Http.Headers.MediaTypeHeaderValue`.
+
+**Breaking change:** The `MediaTypeHeaderBuilder` constructor now throws `ArgumentException` instead of `UriFormatException` when the `ext` or `profile` parameter of the header is not a space-separated list of URIs. The original exception is available through `InnerException`.
+
+**Breaking change:** The `MediaTypeHeaderBuilder` constructor now throws `ArgumentException` instead of `InvalidOperationException` when the `ext` or `profile` parameter is specified more than once.
+
 ## [6.0.0] - 2026-03-07
 
 ### Changed
