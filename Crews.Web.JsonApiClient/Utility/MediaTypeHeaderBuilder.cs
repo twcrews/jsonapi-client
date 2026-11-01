@@ -1,4 +1,4 @@
-using Microsoft.Net.Http.Headers;
+using System.Net.Http.Headers;
 
 namespace Crews.Web.JsonApiClient.Utility;
 
@@ -32,6 +32,10 @@ public class MediaTypeHeaderBuilder
 	/// <param name="headerValue">The existing header to be modified.</param>
 	/// <exception cref="ArgumentException">The media type of the header is invalid.</exception>
 	/// <exception cref="ArgumentException">Illegal parameters are present in the header.</exception>
+	/// <exception cref="ArgumentException">The <c>ext</c> or <c>profile</c> parameter is specified more than once.</exception>
+	/// <exception cref="ArgumentException">
+	/// The value of the <c>ext</c> or <c>profile</c> parameter is not a space-separated list of URIs.
+	/// </exception>
 	public MediaTypeHeaderBuilder(MediaTypeHeaderValue headerValue)
 	{
 		if (headerValue.MediaType != Constants.Headers.MediaType)
@@ -42,17 +46,28 @@ public class MediaTypeHeaderBuilder
 		{
 			throw new ArgumentException(Constants.Exceptions.InvalidHeaderParameters, nameof(headerValue));
 		}
+		if (headerValue.Parameters.Count(IsExtensionsParameter) > 1 || headerValue.Parameters.Count(IsProfilesParameter) > 1)
+		{
+			throw new ArgumentException(Constants.Exceptions.DuplicateHeaderParameters, nameof(headerValue));
+		}
 
 		NameValueHeaderValue? extensionsParameter = headerValue.Parameters.SingleOrDefault(IsExtensionsParameter);
 		NameValueHeaderValue? profilesParameter = headerValue.Parameters.SingleOrDefault(IsProfilesParameter);
 
-		if (extensionsParameter != null)
+		try
 		{
-			Extensions = ParseUrisParameter(extensionsParameter);
+			if (extensionsParameter != null)
+			{
+				Extensions = ParseUrisParameter(extensionsParameter);
+			}
+			if (profilesParameter != null)
+			{
+				Profiles = ParseUrisParameter(profilesParameter);
+			}
 		}
-		if (profilesParameter != null)
+		catch (UriFormatException exception)
 		{
-			Profiles = ParseUrisParameter(profilesParameter);
+			throw new ArgumentException(Constants.Exceptions.InvalidHeaderParameterUris, nameof(headerValue), exception);
 		}
 	}
 
@@ -141,24 +156,18 @@ public class MediaTypeHeaderBuilder
 	}
 
 	private static NameValueHeaderValue BuildUrisParameter(string name, IEnumerable<Uri> uris)
-	{
-		string value = uris
-			.Select(uri => uri.ToString())
-			.Aggregate((combined, uriString) => $"{combined} {uriString}");
-		return new(name, $"\"{value}\"");
-	}
+		=> new(name, $"\"{string.Join(' ', uris)}\"");
 
 	private static HashSet<Uri> ParseUrisParameter(NameValueHeaderValue parameter) 
-		=> parameter.Value.ToString()
+		=> [.. (parameter.Value ?? string.Empty)
 		.Trim('"')
 		.Split(' ')
-		.Select(uriString => new Uri(uriString))
-		.ToHashSet();
+		.Select(uriString => new Uri(uriString))];
 
 	private static bool IsProfilesParameter(NameValueHeaderValue parameter) 
 		=> parameter.Name.Equals(Constants.Headers.ProfilesParameterName, StringComparison.InvariantCultureIgnoreCase);
 	private static bool IsExtensionsParameter(NameValueHeaderValue parameter) 
 		=> parameter.Name.Equals(Constants.Headers.ExtensionsParameterName, StringComparison.InvariantCultureIgnoreCase);
 	private static bool IsIllegalParameter(NameValueHeaderValue parameter) 
-		=> !_legalParameterNames.Contains(parameter.Name.ToString());
+		=> !_legalParameterNames.Contains(parameter.Name);
 }

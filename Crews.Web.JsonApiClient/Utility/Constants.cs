@@ -16,7 +16,11 @@ static class Constants
 			"Invalid media type; see https://jsonapi.org/format/#jsonapi-media-type";
 		public const string InvalidHeaderParameters = 
 			"Only `ext` and `profile` parameters are allowed; see https://jsonapi.org/format/#media-type-parameter-rules";
-		public const string GetResourceInvalidType = 
+		public const string InvalidHeaderParameterUris =
+			"`ext` and `profile` parameters must be space-separated lists of URIs; see https://jsonapi.org/format/#media-type-parameter-rules";
+		public const string DuplicateHeaderParameters =
+			"`ext` and `profile` parameters must not be specified more than once; see https://www.rfc-editor.org/rfc/rfc6838#section-4.3";
+		public const string GetResourceInvalidType =
 			"Data is not an object; use GetResourceCollection if Data is an array";
 		public const string GetResourceCollectionInvalidType = 
 			"Data is not an array; use GetResource if Data is an object";

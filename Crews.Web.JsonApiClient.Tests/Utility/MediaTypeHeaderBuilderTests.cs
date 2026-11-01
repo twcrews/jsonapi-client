@@ -1,4 +1,4 @@
-using Microsoft.Net.Http.Headers;
+using System.Net.Http.Headers;
 using Crews.Web.JsonApiClient.Utility;
 
 namespace Crews.Web.JsonApiClient.Tests.Utility;
@@ -54,6 +54,37 @@ public class MediaTypeHeaderBuilderTests
 		MediaTypeHeaderValue header = new(MediaType);
 		header.Parameters.Add(new("myParameter", "abc123"));
 		Assert.Throws<ArgumentException>(() => new MediaTypeHeaderBuilder(header));
+	}
+
+	[Theory(DisplayName = "Constructor throws exception when header contains malformed URI parameters")]
+	[InlineData("ext")]
+	[InlineData("ext=\"\"")]
+	[InlineData("ext=\"not a uri\"")]
+	[InlineData("profile")]
+	[InlineData("profile=\"\"")]
+	[InlineData("profile=\"not a uri\"")]
+	public void ConstructorThrowsOnMalformedUriParameters(string parameter)
+	{
+		MediaTypeHeaderValue header = MediaTypeHeaderValue.Parse($"{MediaType}; {parameter}");
+
+		ArgumentException exception = Assert.Throws<ArgumentException>(() => new MediaTypeHeaderBuilder(header));
+
+		Assert.Equal("headerValue", exception.ParamName);
+		Assert.IsType<UriFormatException>(exception.InnerException);
+	}
+
+	[Theory(DisplayName = "Constructor throws exception when header contains duplicate URI parameters")]
+	[InlineData("ext")]
+	[InlineData("profile")]
+	public void ConstructorThrowsOnDuplicateUriParameters(string parameterName)
+	{
+		MediaTypeHeaderValue header = new(MediaType);
+		header.Parameters.Add(new(parameterName, "\"https://first.com/\""));
+		header.Parameters.Add(new(parameterName, "\"https://second.com/\""));
+
+		ArgumentException exception = Assert.Throws<ArgumentException>(() => new MediaTypeHeaderBuilder(header));
+
+		Assert.Equal("headerValue", exception.ParamName);
 	}
 
 	[Fact(DisplayName = "AddExtension correctly modifies Extensions property")]
